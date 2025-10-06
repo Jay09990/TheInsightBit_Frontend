@@ -35,7 +35,7 @@ export default function Menu({ isOpen, onClose }) {
       ]
     : [
         { label: "Home", path: "/" },
-        { label: "About", path: "/about" },
+        { label: "Contact us", path: "/contact" },
         { label: "Category", path: "/category" },
       ];
 

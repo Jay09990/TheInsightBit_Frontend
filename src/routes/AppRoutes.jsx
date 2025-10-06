@@ -5,6 +5,8 @@ import { Routes, Route } from 'react-router-dom';
 import Home_page from '../pages/Home_page';
 import Login_page from '../pages/Login_page';
 import Register_page from '../pages/Register_page';
+import ContactUs from '../pages/ContactUs';
+import Category from '../pages/Category';
 import NotFound from '../components/util/NotFound';
 
 const AppRoutes = () => {
@@ -12,10 +14,9 @@ const AppRoutes = () => {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Home_page />} />
-      <Route path="/about" element={<div className="p-8 text-center">About Page Coming Soon</div>} />
-      <Route path="/posts" element={<div className="p-8 text-center">Posts Page Coming Soon</div>} />
-      <Route path="/contact" element={<div className="p-8 text-center">Contact Page Coming Soon</div>} />
-      
+      <Route path="/contact" element={<ContactUs/>} />
+      <Route path="/category" element={<Category/>} />
+            
       {/* Auth Routes */}
       <Route path="/login" element={<Login_page />} />
       <Route path="/register" element={<Register_page />} />
