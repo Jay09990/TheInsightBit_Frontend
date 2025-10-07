@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from "react-router-dom";
+
 
 const HeadlineCardsList = () => {
   const blogData = [
@@ -72,38 +74,41 @@ const HeadlineCardsList = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
             Headlines :
           </h2>
-          
+
           {/* Cards Grid */}
           <div className="space-y-4">
             {blogData.map((blog) => (
-              <div
+              <Link
                 key={blog.id}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden cursor-pointer"
+                to={`/blog/${blog.id}`}
+                className="block" // ensures the link covers the whole card
               >
-                <div className="flex">
-                  {/* Image Container */}
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 flex-shrink-0">
-                    <img
-                      src={blog.thumbnail}
-                      alt={blog.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  {/* Content Container */}
-                  <div className="flex-1 p-4 flex items-center">
-                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 line-clamp-2">
-                      {blog.title}
-                    </h3>
+                <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden cursor-pointer">
+                  <div className="flex">
+                    {/* Image Container */}
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 flex-shrink-0">
+                      <img
+                        src={blog.thumbnail}
+                        alt={blog.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Content Container */}
+                    <div className="flex-1 p-4 flex items-center">
+                      <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 line-clamp-2">
+                        {blog.title}
+                      </h3>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
 
         {/* Follow Us Section */}
-        
+
       </div>
     </div>
   );
