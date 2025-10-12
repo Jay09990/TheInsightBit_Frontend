@@ -1,24 +1,56 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff, UserPlus } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Eye, EyeOff, UserPlus } from "lucide-react";
+import axios from "axios";
 
 const Register_page = () => {
-  const [fullName, setFullName] = useState('');
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [address, setAddress] = useState('');
+  const navigate = useNavigate();
+
+  const [fullName, setFullName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [address, setAddress] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (password !== confirmPassword) {
-      alert('Passwords do not match!');
+      setError("Passwords do not match!");
       return;
     }
-    console.log('Register submitted', { fullName, userName, email, password, address });
+
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        `http://localhost:8000/api/v1/users/register/`,
+        {
+          fullName,
+          userName,
+          email,
+          password,
+          address,
+        }
+      );
+
+      // Successful registration
+      alert("Registration successful! Please login.");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      setError(
+        err.response?.data?.message ||
+          "Something went wrong during registration."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,11 +69,17 @@ const Register_page = () => {
         <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">
           Register to your account
         </h1>
-        <p className="text-center text-gray-700 mb-8">
-          or <Link to="/login" className="text-purple-600 underline">Log in to your existing account</Link>
+        <p className="text-center text-gray-700 mb-4">
+          or{" "}
+          <Link to="/login" className="text-purple-600 underline">
+            Log in to your existing account
+          </Link>
         </p>
 
+        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+
         <form onSubmit={handleSubmit}>
+          {/* Full Name */}
           <div className="mb-5">
             <label className="block text-gray-900 font-medium mb-2">
               Full Name
@@ -55,6 +93,7 @@ const Register_page = () => {
             />
           </div>
 
+          {/* User Name */}
           <div className="mb-5">
             <label className="block text-gray-900 font-medium mb-2">
               User Name
@@ -68,6 +107,7 @@ const Register_page = () => {
             />
           </div>
 
+          {/* Email */}
           <div className="mb-5">
             <label className="block text-gray-900 font-medium mb-2">
               Email address
@@ -81,9 +121,10 @@ const Register_page = () => {
             />
           </div>
 
+          {/* Password */}
           <div className="mb-5">
             <label className="block text-gray-900 font-medium mb-2">
-              password
+              Password
             </label>
             <div className="relative">
               <input
@@ -107,9 +148,10 @@ const Register_page = () => {
             </div>
           </div>
 
+          {/* Confirm Password */}
           <div className="mb-5">
             <label className="block text-gray-900 font-medium mb-2">
-              Confirm password
+              Confirm Password
             </label>
             <div className="relative">
               <input
@@ -133,6 +175,7 @@ const Register_page = () => {
             </div>
           </div>
 
+          {/* Address */}
           <div className="mb-8">
             <label className="block text-gray-900 font-medium mb-2">
               Address
@@ -146,11 +189,15 @@ const Register_page = () => {
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white font-semibold py-4 rounded-xl hover:bg-purple-700 transition-colors"
+            className={`w-full bg-purple-600 text-white font-semibold py-4 rounded-xl hover:bg-purple-700 transition-colors ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={loading}
           >
-            Create Account
+            {loading ? "Registering..." : "Create Account"}
           </button>
         </form>
       </div>

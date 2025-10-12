@@ -1,11 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../../assets/images/logo2.svg";
 import hamburger from "../../assets/images/hamburger.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Menu from "./Menu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // login state
+  const navigate = useNavigate();
+
+ useEffect(() => {
+   const handleStorageChange = () => {
+     const token = localStorage.getItem("accessToken");
+     setIsLoggedIn(!!token);
+   };
+
+   // Listen to storage changes (works if multiple tabs)
+   window.addEventListener("storage", handleStorageChange);
+
+   // Also check on mount
+   handleStorageChange();
+
+   return () => window.removeEventListener("storage", handleStorageChange);
+ }, []);
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (confirmLogout) {
+      // Clear cookies/localStorage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      setIsLoggedIn(false);
+      navigate("/"); // redirect to home after logout
+    }
+  };
 
   return (
     <header className="bg-[#373A3B] text-white shadow-md">
@@ -22,15 +50,17 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Right section with Login + Hamburger */}
+          {/* Right section */}
           <div className="flex items-center gap-3 lg:gap-4">
-            {/* Login button */}
-            <Link
-              to="/login"
-              className="bg-blue-500 text-white text-sm lg:text-base px-4 lg:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
-            >
-              Login
-            </Link>
+            {/* Show Login only if not logged in */}
+            {!isLoggedIn && (
+              <Link
+                to="/login"
+                className="bg-blue-500 text-white text-sm lg:text-base px-4 lg:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+              >
+                Login
+              </Link>
+            )}
 
             {/* Hamburger Menu */}
             <button
@@ -45,7 +75,12 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu Component */}
-      <Menu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <Menu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout} // pass logout function
+      />
     </header>
   );
 };
