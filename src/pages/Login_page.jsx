@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { toast } from "react-toastify"; // toast notifications
+import { toast } from "react-toastify";
 
 const Login_page = () => {
   const navigate = useNavigate();
@@ -13,16 +13,16 @@ const Login_page = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Fix double-slash issue here
   const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://theinsightbit-backend.onrender.com/api/v1";
+    import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ||
+    "http://localhost:8000/api/v1";
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validations
     if (!email || !password) {
       toast.error("Please fill in both email and password");
       return;
@@ -46,20 +46,34 @@ const Login_page = () => {
         password,
       });
 
-      const { user, accessToken } = response.data.data;
+      // ✅ Extract from response correctly
+      const { user, accessToken, refreshToken } = response.data.data;
+      console.log(user);
+      
 
+      // ✅ Save everything properly
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
 
+      // ✅ Trigger event for Navbar update
       window.dispatchEvent(new Event("storage-update"));
 
       toast.success("✅ Login successful!");
-      navigate("/");
+
+      // ✅ Redirect based on role
+      if (user.role === "admin") {
+        navigate("/admin-panel");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Login Error:", error);
 
-      // --- read backend error messages ---
-      const backendMessage = error.response?.data?.data?.message?.toLowerCase() || "";
+      const backendMessage =
+        error.response?.data?.message?.toLowerCase() ||
+        error.response?.data?.data?.message?.toLowerCase() ||
+        "";
 
       if (
         backendMessage.includes("not registered") ||
@@ -73,10 +87,7 @@ const Login_page = () => {
         toast.error("❌ Incorrect password. Please try again.");
       } else if (backendMessage.includes("user not found")) {
         toast.error("⚠️ User not found. Please register first.");
-      } else if (backendMessage.includes("email")) {
-        toast.error("📧 Invalid email format or email not found.");
       } else {
-        // default fallback
         toast.error(
           error.response?.data?.message ||
             "Something went wrong. Please try again."
@@ -89,14 +100,11 @@ const Login_page = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      {/* Back Button */}
       <button className="mb-8 mt-4" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-6 h-6 text-gray-700" />
       </button>
 
-      {/* Login Card */}
       <div className="max-w-md mx-auto bg-gray-200 rounded-3xl p-8 shadow-lg">
-        {/* Icon */}
         <div className="flex justify-center mb-6">
           <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
             <svg
@@ -126,7 +134,6 @@ const Login_page = () => {
         </p>
 
         <form onSubmit={handleSubmit}>
-          {/* Email */}
           <div className="mb-6">
             <label className="block text-gray-900 font-medium mb-2">
               Email address
@@ -140,7 +147,6 @@ const Login_page = () => {
             />
           </div>
 
-          {/* Password */}
           <div className="mb-6">
             <label className="block text-gray-900 font-medium mb-2">
               Password
@@ -167,7 +173,6 @@ const Login_page = () => {
             </div>
           </div>
 
-          {/* Remember Me & Forgot Password */}
           <div className="flex items-center justify-between mb-8">
             <label className="flex items-center cursor-pointer">
               <input
@@ -183,7 +188,6 @@ const Login_page = () => {
             </Link>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}

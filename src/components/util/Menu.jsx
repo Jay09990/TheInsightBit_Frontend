@@ -5,6 +5,7 @@ export default function Menu({ isOpen, onClose }) {
   const menuRef = useRef(null);
 
   const isLoggedIn = !!localStorage.getItem("token");
+  const isAdmin = JSON.parse(localStorage.getItem("user"))?.role === "admin";
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -22,16 +23,27 @@ export default function Menu({ isOpen, onClose }) {
     };
   }, [isOpen, onClose]);
 
-  const menuItems = isLoggedIn
-    ? [
-        { label: "Dashboard", path: "/" },
-        { label: "Profile", path: "/profile" },
-        { label: "Logout", action: "logout" },
-      ]
-    : [
-        { label: "Home", path: "/" },
-        { label: "Contact Us", path: "/contact" },
-      ];
+  let menuItems = [];
+
+  if (isLoggedIn && isAdmin) {
+    menuItems = [
+      { label: "Dashboard", path: "/" },
+      { label: "Profile", path: "/profile" },
+      { label: "Admin Panel", path: "/admin-panel" },
+      { label: "Logout", action: "logout" },
+    ];
+  } else if (isLoggedIn && !isAdmin) {
+    menuItems = [
+      { label: "Dashboard", path: "/" },
+      { label: "Profile", path: "/profile" },
+      { label: "Logout", action: "logout" },
+    ];
+  } else {
+    menuItems = [
+      { label: "Home", path: "/" },
+      { label: "Contact Us", path: "/contact" },
+    ];
+  }
 
   const handleMenuClick = (item) => {
     if (item.action === "logout") {

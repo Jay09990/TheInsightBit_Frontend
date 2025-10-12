@@ -6,22 +6,30 @@ import Menu from "./Menu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState("user"); // 👈 track role
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleStorageChange = () => {
       const token = localStorage.getItem("token");
+      const userData = JSON.parse(localStorage.getItem("user"));
+
       setIsLoggedIn(!!token);
+      if (userData?.role) {
+        setUserRole(userData.role);
+      } else {
+        setUserRole("user");
+      }
     };
 
-    // Listen to our custom event
+    // listen to our custom storage event
     window.addEventListener("storage-update", handleStorageChange);
 
-    // Also check login status on mount
+    // check immediately on mount
     handleStorageChange();
 
-    // Cleanup listener on unmount
+    // cleanup
     return () => {
       window.removeEventListener("storage-update", handleStorageChange);
     };
@@ -30,12 +38,12 @@ const Navbar = () => {
   const handleLogout = () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
-      // Clear cookies/localStorage
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       setIsLoggedIn(false);
+      setUserRole("user");
       window.dispatchEvent(new Event("storage-update"));
-      navigate("/"); // redirect to home after logout
+      navigate("/");
     }
   };
 
@@ -56,13 +64,23 @@ const Navbar = () => {
 
           {/* Right section */}
           <div className="flex items-center gap-3 lg:gap-4">
-            {/* Show Login only if not logged in */}
+            {/* 👇 Show login only if user is NOT logged in */}
             {!isLoggedIn && (
               <Link
                 to="/login"
                 className="bg-blue-500 text-white text-sm lg:text-base px-4 lg:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
               >
                 Login
+              </Link>
+            )}
+
+            {/* 👇 Admin Panel button (only for admins) */}
+            {isLoggedIn && userRole === "admin" && (
+              <Link
+                to="/admin-panel"
+                className="bg-purple-600 text-white text-sm lg:text-base px-4 lg:px-6 py-2 rounded-md hover:bg-purple-700 transition-colors"
+              >
+                Create Post
               </Link>
             )}
 
@@ -78,12 +96,13 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Component */}
+      {/* Menu Component */}
       <Menu
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
         isLoggedIn={isLoggedIn}
-        onLogout={handleLogout} // pass logout function
+        userRole={userRole}
+        onLogout={handleLogout}
       />
     </header>
   );
