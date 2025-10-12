@@ -24,7 +24,7 @@ export default function Menu({ isOpen, onClose }) {
 
   const menuItems = isLoggedIn
     ? [
-        { label: "Dashboard", path: "/dashboard" },
+        { label: "Dashboard", path: "/" },
         { label: "Profile", path: "/profile" },
         { label: "Logout", action: "logout" },
       ]

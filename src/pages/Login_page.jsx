@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { toast } from "react-toastify"; // toast notifications
 
 const Login_page = () => {
   const navigate = useNavigate();
 
-  // Form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -14,10 +14,30 @@ const Login_page = () => {
   const [loading, setLoading] = useState(false);
 
   const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "https://theinsightbit-backend.onrender.com/api/v1";
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://theinsightbit-backend.onrender.com/api/v1";
+
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic validations
+    if (!email || !password) {
+      toast.error("Please fill in both email and password");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -26,20 +46,42 @@ const Login_page = () => {
         password,
       });
 
-      console.log("Login Response:", response.data);
-
-      // Extract user + token from backend
       const { user, accessToken } = response.data.data;
 
-      // Save login data in localStorage
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", accessToken);
 
-      alert("✅ Login successful!");
-      navigate("/"); // redirect to homepage or dashboard
+      window.dispatchEvent(new Event("storage-update"));
+
+      toast.success("✅ Login successful!");
+      navigate("/");
     } catch (error) {
       console.error("Login Error:", error);
-      alert(error.response?.data?.message || "Login failed, please try again");
+
+      // --- read backend error messages ---
+      const backendMessage = error.response?.data?.data?.message?.toLowerCase() || "";
+
+      if (
+        backendMessage.includes("not registered") ||
+        backendMessage.includes("does not exist")
+      ) {
+        toast.error("🚫 You haven’t registered yet. Please create an account.");
+      } else if (
+        backendMessage.includes("invalid password") ||
+        backendMessage.includes("incorrect password")
+      ) {
+        toast.error("❌ Incorrect password. Please try again.");
+      } else if (backendMessage.includes("user not found")) {
+        toast.error("⚠️ User not found. Please register first.");
+      } else if (backendMessage.includes("email")) {
+        toast.error("📧 Invalid email format or email not found.");
+      } else {
+        // default fallback
+        toast.error(
+          error.response?.data?.message ||
+            "Something went wrong. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }

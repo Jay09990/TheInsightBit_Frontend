@@ -9,20 +9,23 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // login state
   const navigate = useNavigate();
 
- useEffect(() => {
-   const handleStorageChange = () => {
-     const token = localStorage.getItem("accessToken");
-     setIsLoggedIn(!!token);
-   };
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    };
 
-   // Listen to storage changes (works if multiple tabs)
-   window.addEventListener("storage", handleStorageChange);
+    // Listen to our custom event
+    window.addEventListener("storage-update", handleStorageChange);
 
-   // Also check on mount
-   handleStorageChange();
+    // Also check login status on mount
+    handleStorageChange();
 
-   return () => window.removeEventListener("storage", handleStorageChange);
- }, []);
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener("storage-update", handleStorageChange);
+    };
+  }, []);
 
   const handleLogout = () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
@@ -31,6 +34,7 @@ const Navbar = () => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       setIsLoggedIn(false);
+      window.dispatchEvent(new Event("storage-update"));
       navigate("/"); // redirect to home after logout
     }
   };
