@@ -16,7 +16,7 @@ const Login_page = () => {
   // ✅ Fix double-slash issue here
   const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ||
-    "http://localhost:8000/api/v1";
+    "https://theinsightbit-backend.onrender.com/api/v1";
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
