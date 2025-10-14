@@ -8,7 +8,7 @@ import Register_page from "../pages/Register_page";
 import ContactUs from "../pages/ContactUs";
 import Category from "../pages/Category";
 import NotFound from "../components/util/NotFound";
-// import Blog from "../pages/Blog";
+import Blog from "../pages/Blog";
 import AdminPanel from "../pages/AdminPanel"; // your admin panel page
 
 // Protected route wrapper for admin
@@ -31,7 +31,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Home_page />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/category" element={<Category />} />
-      {/* <Route path="/blog/:id" element={<Blog />} /> */}
+      <Route path="/blog/:id" element={<Blog />} />
 
       {/* Auth Routes */}
       <Route path="/login" element={<Login_page />} />

@@ -4,13 +4,12 @@ import axios from "axios";
 const AdminPanel = () => {
   const [headline, setHeadline] = useState("");
   const [detail, setDetail] = useState("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState(""); // comma-separated string
   const [media, setMedia] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://theinsightbit-backend.onrender.com/api/v1";
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,14 +19,17 @@ const AdminPanel = () => {
       const token = localStorage.getItem("token");
       if (!token) return alert("Unauthorized. Please log in as admin.");
 
-      // Prepare form data for upload (handles images/videos)
+      // Prepare form data
       const formData = new FormData();
       formData.append("headline", headline);
       formData.append("detail", detail);
-      formData.append("tags", tags);
+      formData.append(
+        "tags",
+        tags.split(",").map((t) => t.trim())
+      ); // convert to array
       if (media) formData.append("media", media);
 
-      const res = await axios.post(`${API_BASE_URL}/posts`, formData, {
+      const res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -108,7 +110,9 @@ const AdminPanel = () => {
 
           {/* Tags */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Tags</label>
+            <label className="block text-gray-700 font-medium mb-2">
+              Tags (comma separated)
+            </label>
             <input
               type="text"
               value={tags}
