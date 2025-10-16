@@ -9,10 +9,12 @@ const Blog = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const localLink = 'http://localhost:8000/api/v1/post/all';
+    const globalLink = 'https://theinsightbit-backend.onrender.com/api/v1/post/all';
     const fetchPosts = async () => {
       try {
         const response = await axios.get(
-          "https://theinsightbit-backend.onrender.com/api/v1/post/all"
+          globalLink
         );
         // Assuming response.data.data contains the array of posts
         setPosts(response?.data?.data || []);

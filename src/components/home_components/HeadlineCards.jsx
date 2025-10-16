@@ -11,12 +11,14 @@ const HeadlineCardsList = () => {
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
+    const localLink = 'http://localhost:8000/api/v1/post/headlines';
+    const globalLink = 'https://theinsightbit-backend.onrender.com/api/v1/post/headlines';
     const fetchHeadlines = async () => {
       try {
         const response = await axios.get(
-          `https://theinsightbit-backend.onrender.com/post/headlines`
+          globalLink
         );
-        setBlogData(response.data.data); // assuming ApiResponse structure
+        setBlogData(response.data.data);
       } catch (err) {
         console.error(err);
         setError("Failed to fetch headlines");
