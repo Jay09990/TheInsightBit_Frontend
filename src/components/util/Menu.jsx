@@ -28,14 +28,14 @@ export default function Menu({ isOpen, onClose }) {
   if (isLoggedIn && isAdmin) {
     menuItems = [
       { label: "Dashboard", path: "/" },
-      { label: "Profile", path: "/profile" },
       { label: "Admin Panel", path: "/admin-panel" },
+      { label: "Contact Us", path: "/contact" },
       { label: "Logout", action: "logout" },
     ];
   } else if (isLoggedIn && !isAdmin) {
     menuItems = [
       { label: "Dashboard", path: "/" },
-      { label: "Profile", path: "/profile" },
+      { label: "Contact Us", path: "/contact" },
       { label: "Logout", action: "logout" },
     ];
   } else {

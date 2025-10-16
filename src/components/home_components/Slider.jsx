@@ -7,7 +7,7 @@ const Slider = () => {
   const [fade, setFade] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
+  // const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
   const localLink = 'http://localhost:8000/api/v1/post/slider?limit=5';
   const globalLink = 'https://theinsightbit-backend.onrender.com/api/v1/post/slider?limit=5';
  
