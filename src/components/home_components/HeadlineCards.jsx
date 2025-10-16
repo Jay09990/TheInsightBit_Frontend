@@ -20,7 +20,7 @@ const HeadlineCardsList = () => {
 
     const fetchHeadlines = async () => {
       try {
-        const response = await axios.get(localLink);
+        const response = await axios.get(globalLink);
         const fetchedPosts = response.data.data || [];
 
         setBlogData(fetchedPosts);

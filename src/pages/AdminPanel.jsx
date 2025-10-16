@@ -97,7 +97,7 @@ const AdminPanel = () => {
 
       if (media) formData.append("media", media);
 
-      const res = await axios.post(`${localLink}/post/create`, formData, {
+      const res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

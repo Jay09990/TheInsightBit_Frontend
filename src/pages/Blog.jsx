@@ -13,12 +13,13 @@ const Blog = () => {
 
   useEffect(() => {
     const localLink = "http://localhost:8000/api/v1";
+    const globalLink = "https://theinsightbit-backend.onrender.com/api/v1";
     const fetchPost = async () => {
       try {
         // Fetch the specific post
-        const postRes = await axios.get(`${localLink}/post/${id}`);
+        const postRes = await axios.get(`${globalLink}/post/${id}`);
         // Fetch all posts to show related
-        const allRes = await axios.get(`${localLink}/post/all?limit=5`);
+        const allRes = await axios.get(`${globalLink}/post/all?limit=5`);
 
         setPost(postRes.data.data);
         setRelatedPosts(allRes.data.data.filter((p) => p._id !== id));
