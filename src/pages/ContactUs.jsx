@@ -1,10 +1,39 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
 
 const ContactUs = () => {
+  const formRef = useRef();
+  const [isSending, setIsSending] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setIsSending(true);
+    setStatusMessage("");
+
+    emailjs
+      .sendForm(
+        "service_m6jnaba", // 🔹 replace with your EmailJS service ID
+        "template_kdpetcl", // 🔹 replace with your template ID
+        formRef.current,
+        "RvTxF0rDlUR3aYamZ" // 🔹 replace with your public key
+      )
+      .then(
+        () => {
+          setStatusMessage("✅ Message sent successfully!");
+          formRef.current.reset();
+        },
+        (error) => {
+          console.error("Email error:", error);
+          setStatusMessage("❌ Failed to send message. Try again later.");
+        }
+      )
+      .finally(() => setIsSending(false));
+  };
+
   return (
     <div className="bg-[#373A3B] text-white flex flex-col items-center justify-start px-6 py-12 min-h-screen">
-
       {/* Heading Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -16,13 +45,15 @@ const ContactUs = () => {
           Contact Us
         </h1>
         <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-          Have any questions or collaboration ideas?  
-          We'd love to hear from you — drop a message below!
+          Have any questions or collaboration ideas? We'd love to hear from you
+          — drop a message below!
         </p>
       </motion.div>
 
       {/* Contact Form */}
       <motion.form
+        ref={formRef}
+        onSubmit={sendEmail}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -34,6 +65,7 @@ const ContactUs = () => {
           </label>
           <input
             type="text"
+            name="user_name"
             id="name"
             placeholder="Enter your full name"
             className="w-full px-4 py-3 rounded-lg bg-[#3E4041] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -47,6 +79,7 @@ const ContactUs = () => {
           </label>
           <input
             type="email"
+            name="user_email"
             id="email"
             placeholder="Enter your email"
             className="w-full px-4 py-3 rounded-lg bg-[#3E4041] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -60,6 +93,7 @@ const ContactUs = () => {
           </label>
           <textarea
             id="message"
+            name="message"
             rows="5"
             placeholder="Write your message..."
             className="w-full px-4 py-3 rounded-lg bg-[#3E4041] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -69,11 +103,22 @@ const ContactUs = () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 transition-colors py-3 rounded-lg font-semibold text-white text-lg"
+          disabled={isSending}
+          className={`w-full transition-colors py-3 rounded-lg font-semibold text-white text-lg ${
+            isSending
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
         >
-          Send Message
+          {isSending ? "Sending..." : "Send Message"}
         </button>
-      </motion.form>      
+
+        {statusMessage && (
+          <p className="text-center mt-3 text-sm text-gray-300">
+            {statusMessage}
+          </p>
+        )}
+      </motion.form>
     </div>
   );
 };
