@@ -8,7 +8,8 @@ const Slider = () => {
   const [loading, setLoading] = useState(true);
 
   const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1";
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://theinsightbit-backend.onrender.com/api/v1";
 
   // ✅ Fetch latest posts (limit 5)
   useEffect(() => {

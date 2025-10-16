@@ -14,7 +14,7 @@ const HeadlineCardsList = () => {
     const fetchHeadlines = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/v1/post/headlines`
+          `https://theinsightbit-backend.onrender.com/post/headlines`
         );
         setBlogData(response.data.data); // assuming ApiResponse structure
       } catch (err) {

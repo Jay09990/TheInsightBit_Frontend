@@ -12,7 +12,7 @@ const Blog = () => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v1/post/all"
+          "https://theinsightbit-backend.onrender.com/api/v1/post/all"
         );
         // Assuming response.data.data contains the array of posts
         setPosts(response?.data?.data || []);
