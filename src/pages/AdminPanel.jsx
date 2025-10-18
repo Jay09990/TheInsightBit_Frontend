@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { X, Plus } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const predefinedCategories = [
   "Political",
@@ -20,18 +21,37 @@ const AdminPanel = () => {
   const [categories, setCategories] = useState([]);
   const [media, setMedia] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [postId, setPostId] = useState(null);
+  const [existingMedia, setExistingMedia] = useState("");
 
-  const fileRef = useRef(); // 👈 to fully reset file input
+  const fileRef = useRef();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL ||
     "https://theinsightbit-backend.onrender.com/api/v1";
-  const localLink = "http://localhost:8000/api/v1";
 
-  // ---------------------
+  // -----------------------------
+  // Load Post if Editing
+  // -----------------------------
+  useEffect(() => {
+    if (location.state?.postData) {
+      const { postData } = location.state;
+      setIsEditing(true);
+      setPostId(postData._id);
+      setHeadline(postData.headline || "");
+      setDetail(postData.detail || "");
+      setTags(postData.tags || []);
+      setCategories(postData.categories || []);
+      setExistingMedia(postData.media || "");
+    }
+  }, [location.state]);
+
+  // -----------------------------
   // Helpers
-  // ---------------------
-
+  // -----------------------------
   const addTag = () => {
     const v = tagInput.trim();
     if (!v) return;
@@ -39,14 +59,11 @@ const AdminPanel = () => {
     setTagInput("");
   };
 
-  const removeTag = (t) => {
-    setTags((p) => p.filter((x) => x !== t));
-  };
+  const removeTag = (t) => setTags((p) => p.filter((x) => x !== t));
 
   const addCategory = () => {
     const v = categoryInput.trim();
     if (!v) return;
-
     if (categories.includes(v)) {
       setCategoryInput("");
       return;
@@ -63,51 +80,48 @@ const AdminPanel = () => {
     setCategoryInput("");
   };
 
-  const removeCategory = (c) => {
-    setCategories((p) => p.filter((x) => x !== c));
-  };
+  const removeCategory = (c) => setCategories((p) => p.filter((x) => x !== c));
 
-  // ---------------------
-  // Submit handler (fixed)
-  // ---------------------
-
+  // -----------------------------
+  // Submit Handler
+  // -----------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // ✅ Create *new* FormData fresh every time
-    const formData = new FormData();
     setLoading(true);
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Unauthorized. Please log in as admin.");
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("headline", headline);
+    formData.append("detail", detail);
+    tags.forEach((t) => formData.append("tags[]", t));
+    categories.forEach((c) => formData.append("categories[]", c));
+    if (media) formData.append("media", media);
+
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("Unauthorized. Please log in as admin.");
+      let res;
+      if (isEditing && postId) {
+        // 📝 Update existing post
+        res = await axios.put(`${API_BASE_URL}/post/${postId}`, formData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("✅ Post updated successfully!");
+      } else {
+        // 🆕 Create new post
+        res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("✅ Post created successfully!");
+      }
 
-      if (!headline.trim() || !detail.trim())
-        throw new Error("Headline and detail are required.");
+      console.log("Post response:", res.data);
 
-      formData.append("headline", headline);
-      formData.append("detail", detail);
-
-      // ✅ Append tags as array
-      if (tags.length) tags.forEach((t) => formData.append("tags[]", t));
-
-      // ✅ Append categories as array
-      if (categories.length)
-        categories.forEach((c) => formData.append("categories[]", c));
-
-      if (media) formData.append("media", media);
-
-      const res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("✅ Post Response:", res.data);
-
-      alert("✅ Post created successfully!");
-
-      // ✅ Fully clear form
+      // Reset form and navigate back to posts page
       setHeadline("");
       setDetail("");
       setTags([]);
@@ -115,29 +129,26 @@ const AdminPanel = () => {
       setTagInput("");
       setCategoryInput("");
       setMedia(null);
-
-      // ✅ Reset file input DOM value (avoids reusing previous file object)
+      setExistingMedia("");
       if (fileRef.current) fileRef.current.value = null;
 
-      // ✅ Force unique key rerender to reset internal FormData reference
-      e.target.reset?.();
+      navigate("/admin/posts"); // Redirect back to posts manager
     } catch (err) {
-      console.error("❌ Create post error:", err);
+      console.error("❌ Error:", err);
       alert(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ---------------------
+  // -----------------------------
   // JSX
-  // ---------------------
-
+  // -----------------------------
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl p-8">
         <h2 className="text-3xl font-bold mb-6 text-center text-purple-700">
-          Admin Post Creation Center
+          {isEditing ? "Edit Post" : "Admin Post Creation Center"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -161,19 +172,23 @@ const AdminPanel = () => {
             <label className="block text-gray-700 font-medium mb-2">
               Media (Photo or Video)
             </label>
+            {existingMedia && !media && (
+              <div className="mb-2">
+                <p className="text-sm text-gray-500">Current Media:</p>
+                <img
+                  src={existingMedia}
+                  alt="existing media"
+                  className="rounded-lg max-h-48 object-cover"
+                />
+              </div>
+            )}
             <input
               ref={fileRef}
-              id="mediaInput"
               type="file"
               accept="image/*,video/*"
               onChange={(e) => setMedia(e.target.files[0])}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none"
             />
-            {media && (
-              <p className="text-sm text-gray-500 mt-1">
-                Selected: <span className="font-medium">{media.name}</span>
-              </p>
-            )}
           </div>
 
           {/* Details */}
@@ -209,7 +224,7 @@ const AdminPanel = () => {
                     setTags((p) => p.slice(0, -1));
                   }
                 }}
-                placeholder="Type tag and press Enter or click Add"
+                placeholder="Type tag and press Enter"
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
               />
               <button
@@ -228,11 +243,7 @@ const AdminPanel = () => {
                   className="inline-flex items-center gap-2 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm"
                 >
                   {t}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(t)}
-                    className="p-1"
-                  >
+                  <button type="button" onClick={() => removeTag(t)}>
                     <X size={14} />
                   </button>
                 </span>
@@ -245,7 +256,6 @@ const AdminPanel = () => {
             <label className="block text-gray-700 font-medium mb-2">
               Categories (user-facing)
             </label>
-
             <div className="flex gap-2 mb-2">
               <select
                 onChange={(e) => {
@@ -276,10 +286,9 @@ const AdminPanel = () => {
                     addCategory();
                   }
                 }}
-                placeholder="Or type new category and click Add"
+                placeholder="Or type new category"
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
               />
-
               <button
                 type="button"
                 onClick={addCategory}
@@ -296,11 +305,7 @@ const AdminPanel = () => {
                   className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
                 >
                   {c}
-                  <button
-                    type="button"
-                    onClick={() => removeCategory(c)}
-                    className="p-1"
-                  >
+                  <button type="button" onClick={() => removeCategory(c)}>
                     <X size={14} />
                   </button>
                 </span>
@@ -308,13 +313,16 @@ const AdminPanel = () => {
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all"
           >
-            {loading ? "Posting..." : "Create Post"}
+            {loading
+              ? "Saving..."
+              : isEditing
+              ? "Update Post"
+              : "Create Post"}
           </button>
         </form>
       </div>

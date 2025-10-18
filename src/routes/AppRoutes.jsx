@@ -10,6 +10,7 @@ import Category from "../pages/Category";
 import NotFound from "../components/util/NotFound";
 import Blog from "../pages/Blog";
 import AdminPanel from "../pages/AdminPanel"; // your admin panel page
+import AdminPosts from "../pages/AdminPosts";
 
 // Protected route wrapper for admin
 const AdminRoute = ({ children }) => {
@@ -25,13 +26,16 @@ const AdminRoute = ({ children }) => {
 };
 
 const AppRoutes = () => {
+  // ✅ Define user here
+  const user = JSON.parse(localStorage.getItem("user"));
+
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Home_page />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/category" element={<Category />} />
-      <Route path="/blog/:id" element={<Blog />} />
+      <Route path="/blog/:id" element={<Blog user={user} />} />
 
       {/* Auth Routes */}
       <Route path="/login" element={<Login_page />} />
@@ -43,6 +47,15 @@ const AppRoutes = () => {
         element={
           <AdminRoute>
             <AdminPanel />
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin-posts"
+        element={
+          <AdminRoute>
+            <AdminPosts />
           </AdminRoute>
         }
       />

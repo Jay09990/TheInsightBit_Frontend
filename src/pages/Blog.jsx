@@ -3,8 +3,9 @@ import axios from "axios";
 import BlogSlider from "../components/BlogPage/BlogSlider";
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
+import Comments from "../components/util/Comments.jsx";
 
-const Blog = () => {
+const Blog = ({ user }) => {
   const { id } = useParams(); // 👈 get post ID from URL
   const [post, setPost] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
@@ -34,9 +35,11 @@ const Blog = () => {
     fetchPost();
   }, [id]);
 
-  if (loading) return <p className="text-center text-white mt-20">Loading post...</p>;
+  if (loading)
+    return <p className="text-center text-white mt-20">Loading post...</p>;
   if (error) return <p className="text-center text-red-500 mt-20">{error}</p>;
-  if (!post) return <p className="text-center text-gray-400 mt-20">Post not found</p>;
+  if (!post)
+    return <p className="text-center text-gray-400 mt-20">Post not found</p>;
 
   const relatedSlides = relatedPosts.map((p) => ({
     id: p._id,
@@ -90,6 +93,9 @@ const Blog = () => {
       </motion.div>
 
       <BlogSlider slides={relatedSlides} />
+
+      {/* 🗨️ Comments Section */}
+      <Comments postId={post._id} user={user} />
     </div>
   );
 };

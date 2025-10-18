@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
+
 export default function Menu({ isOpen, onClose }) {
   const menuRef = useRef(null);
 
@@ -29,6 +30,7 @@ export default function Menu({ isOpen, onClose }) {
     menuItems = [
       { label: "Dashboard", path: "/" },
       { label: "Admin Panel", path: "/admin-panel" },
+      { label: "All Posts", path: "/admin-posts" },
       { label: "Contact Us", path: "/contact" },
       { label: "Logout", action: "logout" },
     ];
