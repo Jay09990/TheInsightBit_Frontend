@@ -11,7 +11,7 @@ const AdminPosts = () => {
     const [deleteTarget, setDeleteTarget] = useState(null);
 
     const navigate = useNavigate();
-    const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
+    const API_BASE_URL = "https://theinsightbit-backend.onrender.com";
 
     // ✅ Fetch posts created by logged-in admin
     useEffect(() => {
