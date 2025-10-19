@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MoreVertical } from "lucide-react"; // 3 dots icon
+import { MoreVertical } from "lucide-react";
 import { motion } from "framer-motion";
 
 const AdminPosts = () => {
     const [posts, setPosts] = useState([]);
-    const [menuOpen, setMenuOpen] = useState(null); // track which post menu is open
+    const [menuOpen, setMenuOpen] = useState(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
 
     const navigate = useNavigate();
     const API_BASE_URL = "https://theinsightbit-backend.onrender.com";
 
-    // ✅ Fetch posts created by logged-in admin
     useEffect(() => {
         const fetchPosts = async () => {
             try {
                 const { data } = await axios.get(`${API_BASE_URL}/api/v1/post/all`, {
                     withCredentials: true,
                 });
-                // Filter posts belonging to the current admin
                 const user = JSON.parse(localStorage.getItem("user"));
                 const adminPosts = data.data.filter(
                     (post) => post.author?._id === user?._id
@@ -33,7 +31,6 @@ const AdminPosts = () => {
         fetchPosts();
     }, []);
 
-    // ✅ Handle delete confirmation
     const handleDelete = async () => {
         if (!deleteTarget) return;
 
@@ -49,12 +46,10 @@ const AdminPosts = () => {
         }
     };
 
-    // ✅ Navigate to edit page
+    // ✅ FIXED: Pass data with correct key name 'postData'
     const handleEdit = (post) => {
-        navigate("/admin-panel", { state: { editPost: post } }); // preload data
+        navigate("/admin-panel", { state: { postData: post } });
     };
-
-    console.log(posts)
 
     return (
         <div className="p-6">
@@ -76,13 +71,11 @@ const AdminPosts = () => {
                                 className="w-full h-48 object-cover"
                             />
 
-                            {/* Post Info */}
                             <div className="p-4">
                                 <h3 className="text-lg font-semibold">{post.headline}</h3>
                                 <p className="text-gray-500 text-sm line-clamp-2">{post.detail}</p>
                             </div>
 
-                            {/* 3-dot menu */}
                             <div className="absolute top-3 right-3">
                                 <button
                                     onClick={() =>
@@ -96,7 +89,10 @@ const AdminPosts = () => {
                                 {menuOpen === post._id && (
                                     <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-28 border border-gray-200 z-10">
                                         <button
-                                            onClick={() => handleEdit(post)}
+                                            onClick={() => {
+                                                handleEdit(post);
+                                                setMenuOpen(null);
+                                            }}
                                             className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
                                         >
                                             Edit
@@ -105,6 +101,7 @@ const AdminPosts = () => {
                                             onClick={() => {
                                                 setShowConfirm(true);
                                                 setDeleteTarget(post._id);
+                                                setMenuOpen(null);
                                             }}
                                             className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-red-600"
                                         >
@@ -118,7 +115,6 @@ const AdminPosts = () => {
                 </div>
             )}
 
-            {/* Confirmation Modal */}
             {showConfirm && (
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
                     <motion.div

@@ -29,29 +29,27 @@ const AdminPanel = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://theinsightbit-backend.onrender.com/api/v1";
+  const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
 
-  // -----------------------------
-  // Load Post if Editing
-  // -----------------------------
+  // ✅ FIXED: Load post data when editing
   useEffect(() => {
     if (location.state?.postData) {
-      const { postData } = location.state;
+      const post = location.state.postData;
+      
       setIsEditing(true);
-      setPostId(postData._id);
-      setHeadline(postData.headline || "");
-      setDetail(postData.detail || "");
-      setTags(postData.tags || []);
-      setCategories(postData.categories || []);
-      setExistingMedia(postData.media || "");
+      setPostId(post._id);
+      setHeadline(post.headline || "");
+      setDetail(post.detail || "");
+      setTags(post.tags || []);
+      setCategories(post.categories || []);
+      
+      // Use mediaUrl if available, otherwise media
+      setExistingMedia(post.mediaUrl || post.media || "");
+      
+      console.log("✅ Loaded post for editing:", post);
     }
   }, [location.state]);
 
-  // -----------------------------
-  // Helpers
-  // -----------------------------
   const addTag = () => {
     const v = tagInput.trim();
     if (!v) return;
@@ -82,9 +80,7 @@ const AdminPanel = () => {
 
   const removeCategory = (c) => setCategories((p) => p.filter((x) => x !== c));
 
-  // -----------------------------
-  // Submit Handler
-  // -----------------------------
+  // ✅ FIXED: Submit handler for both create and update
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -101,38 +97,43 @@ const AdminPanel = () => {
     formData.append("detail", detail);
     tags.forEach((t) => formData.append("tags[]", t));
     categories.forEach((c) => formData.append("categories[]", c));
-    if (media) formData.append("media", media);
+    
+    // Only append media if a new file is selected
+    if (media) {
+      formData.append("media", media);
+    }
 
     try {
       let res;
+      
       if (isEditing && postId) {
         // 📝 Update existing post
         res = await axios.put(`${API_BASE_URL}/post/${postId}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          },
         });
         alert("✅ Post updated successfully!");
       } else {
         // 🆕 Create new post
         res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          },
         });
         alert("✅ Post created successfully!");
       }
 
       console.log("Post response:", res.data);
 
-      // Reset form and navigate back to posts page
-      setHeadline("");
-      setDetail("");
-      setTags([]);
-      setCategories([]);
-      setTagInput("");
-      setCategoryInput("");
-      setMedia(null);
-      setExistingMedia("");
-      if (fileRef.current) fileRef.current.value = null;
-
-      navigate("/admin-posts"); // Redirect back to posts manager
+      // Reset form
+      resetForm();
+      
+      // Navigate back to posts page
+      navigate("/admin-posts");
+      
     } catch (err) {
       console.error("❌ Error:", err);
       alert(err.response?.data?.message || err.message);
@@ -141,14 +142,32 @@ const AdminPanel = () => {
     }
   };
 
-  // -----------------------------
-  // JSX
-  // -----------------------------
+  // ✅ Helper function to reset form
+  const resetForm = () => {
+    setHeadline("");
+    setDetail("");
+    setTags([]);
+    setCategories([]);
+    setTagInput("");
+    setCategoryInput("");
+    setMedia(null);
+    setExistingMedia("");
+    setIsEditing(false);
+    setPostId(null);
+    if (fileRef.current) fileRef.current.value = null;
+  };
+
+  // ✅ Cancel editing
+  const handleCancel = () => {
+    resetForm();
+    navigate("/admin-posts");
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl p-8">
         <h2 className="text-3xl font-bold mb-6 text-center text-purple-700">
-          {isEditing ? "Edit Post" : "Admin Post Creation Center"}
+          {isEditing ? "✏️ Edit Post" : "➕ Create New Post"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -173,13 +192,21 @@ const AdminPanel = () => {
               Media (Photo or Video)
             </label>
             {existingMedia && !media && (
-              <div className="mb-2">
-                <p className="text-sm text-gray-500">Current Media:</p>
-                <img
-                  src={existingMedia}
-                  alt="existing media"
-                  className="rounded-lg max-h-48 object-cover"
-                />
+              <div className="mb-2 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-2">Current Media:</p>
+                {existingMedia.endsWith('.mp4') || existingMedia.endsWith('.webm') ? (
+                  <video 
+                    src={existingMedia} 
+                    controls 
+                    className="rounded-lg max-h-48 w-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={existingMedia}
+                    alt="existing media"
+                    className="rounded-lg max-h-48 w-full object-cover"
+                  />
+                )}
               </div>
             )}
             <input
@@ -189,6 +216,11 @@ const AdminPanel = () => {
               onChange={(e) => setMedia(e.target.files[0])}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none"
             />
+            {media && (
+              <p className="text-sm text-green-600 mt-1">
+                ✓ New file selected: {media.name}
+              </p>
+            )}
           </div>
 
           {/* Details */}
@@ -230,7 +262,7 @@ const AdminPanel = () => {
               <button
                 type="button"
                 onClick={addTag}
-                className="bg-purple-600 text-white px-3 py-2 rounded-lg inline-flex items-center gap-2"
+                className="bg-purple-600 text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-purple-700"
               >
                 <Plus size={14} /> Add
               </button>
@@ -254,7 +286,7 @@ const AdminPanel = () => {
           {/* Categories */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
-              Categories (user-facing)
+              Categories
             </label>
             <div className="flex gap-2 mb-2">
               <select
@@ -292,7 +324,7 @@ const AdminPanel = () => {
               <button
                 type="button"
                 onClick={addCategory}
-                className="bg-blue-600 text-white px-3 py-2 rounded-lg inline-flex items-center gap-2"
+                className="bg-blue-600 text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-blue-700"
               >
                 <Plus size={14} /> Add
               </button>
@@ -313,17 +345,30 @@ const AdminPanel = () => {
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all"
-          >
-            {loading
-              ? "Saving..."
-              : isEditing
-              ? "Update Post"
-              : "Create Post"}
-          </button>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading
+                ? "Saving..."
+                : isEditing
+                ? "✓ Confirm Edit"
+                : "➕ Create Post"}
+            </button>
+
+            {isEditing && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="px-6 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-xl transition-all"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </div>
