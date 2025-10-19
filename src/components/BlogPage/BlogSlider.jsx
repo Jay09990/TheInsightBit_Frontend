@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const BlogSlider = ({ slides }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,11 +49,15 @@ const BlogSlider = ({ slides }) => {
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {slides.map((slide) => (
-            <div key={slide.id} className="min-w-full relative">
-              <div className="relative h-96 group cursor-pointer">
+            <div key={slide._id || slide.id} className="min-w-full relative">
+              {/* ✅ Wrapped entire slide in Link */}
+              <Link 
+                to={`/blog/${slide._id || slide.id}`}
+                className="block relative h-96 group cursor-pointer"
+              >
                 <img
-                  src={slide.image}
-                  alt={slide.title}
+                  src={slide.mediaUrl || slide.image}
+                  alt={slide.headline || slide.title}
                   className="w-full h-full object-cover"
                 />
                 
@@ -62,13 +67,17 @@ const BlogSlider = ({ slides }) => {
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
                   <h3 className="text-2xl md:text-3xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
-                    {slide.title}
+                    {slide.headline || slide.title}
                   </h3>
                   <p className="text-gray-200 text-lg">
-                    {slide.description}
+                    {slide.detail 
+                      ? (slide.detail.length > 100 
+                          ? `${slide.detail.substring(0, 100)}...` 
+                          : slide.detail)
+                      : slide.description}
                   </p>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -76,7 +85,7 @@ const BlogSlider = ({ slides }) => {
         {/* Navigation Arrows */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-3 rounded-full transition-all"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-3 rounded-full transition-all z-10"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-6 h-6 text-white" />
@@ -84,14 +93,14 @@ const BlogSlider = ({ slides }) => {
         
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-3 rounded-full transition-all"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-3 rounded-full transition-all z-10"
           aria-label="Next slide"
         >
           <ChevronRight className="w-6 h-6 text-white" />
         </button>
 
         {/* Dots Indicator */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {slides.map((_, index) => (
             <button
               key={index}
@@ -109,7 +118,7 @@ const BlogSlider = ({ slides }) => {
 
       {/* Manual Scroll Hint */}
       <p className="text-center text-gray-400 text-sm mt-4">
-        Hover to pause • Click arrows or dots to navigate
+        Hover to pause • Click arrows or dots to navigate • Click slide to read full article
       </p>
     </div>
   );

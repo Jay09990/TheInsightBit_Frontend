@@ -25,7 +25,7 @@ const ContactUs = () => {
           formRef.current.reset();
         },
         (error) => {
-          console.error("Email error:", error);
+          // console.error("Email error:", error);
           setStatusMessage("❌ Failed to send message. Try again later.");
         }
       )

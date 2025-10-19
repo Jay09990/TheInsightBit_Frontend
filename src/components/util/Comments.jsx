@@ -16,7 +16,7 @@ const Comments = ({ postId, user }) => {
         const res = await axios.get(`${API_BASE_URL}/api/v1/comments/${postId}`);
         setComments(Array.isArray(res.data?.data) ? res.data.data : []);
       } catch (error) {
-        console.error("❌ Error fetching comments:", error);
+        // console.error("❌ Error fetching comments:", error);
         setComments([]);
       }
     };
@@ -53,7 +53,7 @@ const Comments = ({ postId, user }) => {
       const { data } = await axios.get(`${API_BASE_URL}/api/v1/comments/${postId}`);
       setComments(Array.isArray(data?.data) ? data.data : []);
     } catch (err) {
-      console.error("❌ Failed to post comment:", err);
+      // console.error("❌ Failed to post comment:", err);
     }
   };
 
@@ -86,7 +86,7 @@ const Comments = ({ postId, user }) => {
       const { data } = await axios.get(`${API_BASE_URL}/api/v1/comments/${postId}`);
       setComments(Array.isArray(data?.data) ? data.data : []);
     } catch (err) {
-      console.error("❌ Failed to post reply:", err);
+      // console.error("❌ Failed to post reply:", err);
     }
   };
 

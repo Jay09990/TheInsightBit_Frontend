@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Slider = () => {
   const [slides, setSlides] = useState([]);
@@ -7,18 +8,16 @@ const Slider = () => {
   const [fade, setFade] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  // const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
-  const localLink = 'http://localhost:8000/api/v1/post/slider?limit=5';
-  const globalLink = 'https://theinsightbit-backend.onrender.com/api/v1/post/slider?limit=5';
+  const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
  
   // ✅ Fetch latest posts (limit 5)
   useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const res = await axios.get(globalLink);
+        const res = await axios.get(`${API_BASE_URL}/post/slider?limit=5`);
         setSlides(res.data.data || []);
       } catch (error) {
-        console.error("Error fetching slider posts:", error);
+        // console.error("Error fetching slider posts:", error);
       } finally {
         setLoading(false);
       }
@@ -113,9 +112,13 @@ const Slider = () => {
                     ? `${current.detail.substring(0, 150)}...`
                     : current.detail}
                 </p>
-                <button className="bg-white text-gray-900 px-6 py-2.5 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base shadow-lg">
+                {/* ✅ Changed button to Link */}
+                <Link
+                  to={`/blog/${current._id}`}
+                  className="inline-block bg-white text-gray-900 px-6 py-2.5 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base shadow-lg"
+                >
                   Read More →
-                </button>
+                </Link>
               </div>
             </div>
 

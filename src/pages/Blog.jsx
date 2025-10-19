@@ -26,7 +26,7 @@ const Blog = ({ user }) => {
         setRelatedPosts(allRes.data.data.filter((p) => p._id !== id));
         setLoading(false);
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         setError("Failed to fetch post");
         setLoading(false);
       }

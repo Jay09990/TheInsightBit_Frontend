@@ -48,7 +48,7 @@ const Login_page = () => {
 
       // ✅ Extract from response correctly
       const { user, accessToken, refreshToken } = response.data.data;
-      console.log(user);
+      // console.log(user);
       
 
       // ✅ Save everything properly
@@ -68,7 +68,7 @@ const Login_page = () => {
         navigate("/");
       }
     } catch (error) {
-      console.error("Login Error:", error);
+      // console.error("Login Error:", error);
 
       const backendMessage =
         error.response?.data?.message?.toLowerCase() ||

@@ -47,7 +47,7 @@ const AdminPanel = () => {
       // Use mediaUrl if available, otherwise media
       setExistingMedia(post.mediaUrl || post.media || "");
       
-      console.log("✅ Loaded post for editing:", post);
+      // console.log("✅ Loaded post for editing:", post);
     }
   }, [location.state]);
 
@@ -109,8 +109,8 @@ const AdminPanel = () => {
       
       if (isEditing && postId) {
         // 📝 Update existing post
-        console.log("🔄 Updating post with ID:", postId);
-        console.log("🔄 API URL:", `${API_BASE_URL}/post/${postId}`);
+        // console.log("🔄 Updating post with ID:", postId);
+        // console.log("🔄 API URL:", `${API_BASE_URL}/post/${postId}`);
         
         res = await axios.patch(`${API_BASE_URL}/post/${postId}`, formData, {
           headers: { 
@@ -121,8 +121,8 @@ const AdminPanel = () => {
         alert("✅ Post updated successfully!");
       } else {
         // 🆕 Create new post
-        console.log("🆕 Creating new post");
-        console.log("🔄 API URL:", `${API_BASE_URL}/post/create`);
+        // console.log("🆕 Creating new post");
+        // console.log("🔄 API URL:", `${API_BASE_URL}/post/create`);
         
         res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
           headers: { 
@@ -133,7 +133,7 @@ const AdminPanel = () => {
         alert("✅ Post created successfully!");
       }
 
-      console.log("✅ Server response:", res.data);
+      // console.log("✅ Server response:", res.data);
 
       // Reset form
       resetForm();
@@ -142,12 +142,12 @@ const AdminPanel = () => {
       navigate("/admin-posts");
       
     } catch (err) {
-      console.error("❌ Error details:", {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-        url: err.config?.url
-      });
+      // console.error("❌ Error details:", {
+      //   message: err.message,
+      //   response: err.response?.data,
+      //   status: err.response?.status,
+      //   url: err.config?.url
+      // });
       
       const errorMessage = err.response?.data?.message 
         || err.message 

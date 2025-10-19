@@ -44,7 +44,7 @@ const Register_page = () => {
       alert("Registration successful! Please login.");
       navigate("/login");
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       setError(
         err.response?.data?.message ||
           "Something went wrong during registration."

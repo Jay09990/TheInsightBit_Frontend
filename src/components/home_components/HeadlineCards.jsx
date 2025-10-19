@@ -26,7 +26,7 @@ const HeadlineCardsList = () => {
         setBlogData(fetchedPosts);
         setVisibleBlogs(fetchedPosts.slice(0, 15));
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         setError("Failed to fetch headlines");
       } finally {
         setLoading(false);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 
 const AdminPosts = () => {
@@ -11,12 +11,12 @@ const AdminPosts = () => {
     const [deleteTarget, setDeleteTarget] = useState(null);
 
     const navigate = useNavigate();
-    const API_BASE_URL = "https://theinsightbit-backend.onrender.com";
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://theinsightbit-backend.onrender.com/api/v1";
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const { data } = await axios.get(`${API_BASE_URL}/api/v1/post/all`, {
+                const { data } = await axios.get(`${API_BASE_URL}/post/all`, {
                     withCredentials: true,
                 });
                 const user = JSON.parse(localStorage.getItem("user"));
@@ -35,7 +35,7 @@ const AdminPosts = () => {
         if (!deleteTarget) return;
 
         try {
-            await axios.delete(`${API_BASE_URL}/api/v1/post/${deleteTarget}`, {
+            await axios.delete(`${API_BASE_URL}/post/${deleteTarget}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setPosts(posts.filter((p) => p._id !== deleteTarget));
@@ -43,10 +43,10 @@ const AdminPosts = () => {
             setDeleteTarget(null);
         } catch (error) {
             console.error("Error deleting post:", error);
+            alert("Failed to delete post: " + (error.response?.data?.message || error.message));
         }
     };
 
-    // ✅ FIXED: Pass data with correct key name 'postData'
     const handleEdit = (post) => {
         navigate("/admin-panel", { state: { postData: post } });
     };
@@ -65,29 +65,50 @@ const AdminPosts = () => {
                             whileHover={{ scale: 1.03 }}
                             className="relative rounded-2xl shadow-md overflow-hidden border border-gray-200 bg-white"
                         >
-                            <img
-                                src={post.mediaUrl || "/placeholder.png"}
-                                alt={post.headline}
-                                className="w-full h-48 object-cover"
-                            />
+                            {/* ✅ Image with Link overlay */}
+                            <Link to={`/blog/${post._id}`} className="block relative group">
+                                <img
+                                    src={post.mediaUrl || "/placeholder.png"}
+                                    alt={post.headline}
+                                    className="w-full h-48 object-cover"
+                                />
+                                {/* ✅ Preview overlay on hover */}
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                    <div className="text-white flex items-center gap-2">
+                                        <Eye size={20} />
+                                        <span className="font-medium">Preview Post</span>
+                                    </div>
+                                </div>
+                            </Link>
 
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold">{post.headline}</h3>
+                            {/* ✅ Post info also clickable */}
+                            <Link to={`/blog/${post._id}`} className="block p-4 hover:bg-gray-50 transition-colors">
+                                <h3 className="text-lg font-semibold hover:text-blue-600 transition-colors">
+                                    {post.headline}
+                                </h3>
                                 <p className="text-gray-500 text-sm line-clamp-2">{post.detail}</p>
-                            </div>
+                            </Link>
 
+                            {/* ✅ Action menu */}
                             <div className="absolute top-3 right-3">
                                 <button
                                     onClick={() =>
                                         setMenuOpen(menuOpen === post._id ? null : post._id)
                                     }
-                                    className="p-1 rounded-full hover:bg-gray-100"
+                                    className="p-1 rounded-full bg-white/90 hover:bg-white shadow-md"
                                 >
                                     <MoreVertical size={20} />
                                 </button>
 
                                 {menuOpen === post._id && (
-                                    <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-28 border border-gray-200 z-10">
+                                    <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-32 border border-gray-200 z-20">
+                                        <Link
+                                            to={`/blog/${post._id}`}
+                                            className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                                            onClick={() => setMenuOpen(null)}
+                                        >
+                                            👁️ Preview
+                                        </Link>
                                         <button
                                             onClick={() => {
                                                 handleEdit(post);
@@ -95,7 +116,7 @@ const AdminPosts = () => {
                                             }}
                                             className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
                                         >
-                                            Edit
+                                            ✏️ Edit
                                         </button>
                                         <button
                                             onClick={() => {
@@ -105,7 +126,7 @@ const AdminPosts = () => {
                                             }}
                                             className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-red-600"
                                         >
-                                            Delete
+                                            🗑️ Delete
                                         </button>
                                     </div>
                                 )}
