@@ -132,7 +132,7 @@ const AdminPanel = () => {
       setExistingMedia("");
       if (fileRef.current) fileRef.current.value = null;
 
-      navigate("/admin/posts"); // Redirect back to posts manager
+      navigate("/admin-posts"); // Redirect back to posts manager
     } catch (err) {
       console.error("❌ Error:", err);
       alert(err.response?.data?.message || err.message);

@@ -7,7 +7,7 @@ const Comments = ({ postId, user }) => {
   const [replyText, setReplyText] = useState("");
   const [replyTarget, setReplyTarget] = useState(null);
 
-  const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1"; // 🔹 change when deploying
+  const API_BASE_URL = "https://theinsightbit-backend.onrender.com"; // 🔹 change when deploying
 
   // ✅ Fetch all comments for this post
   useEffect(() => {
