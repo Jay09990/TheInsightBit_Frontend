@@ -29,7 +29,8 @@ const AdminPanel = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
+  // Use environment variable or fallback to production URL
+    const API_BASE_URL = "https://theinsightbit-backend.onrender.com";
 
   // ✅ FIXED: Load post data when editing
   useEffect(() => {
@@ -108,7 +109,10 @@ const AdminPanel = () => {
       
       if (isEditing && postId) {
         // 📝 Update existing post
-        res = await axios.put(`${API_BASE_URL}/post/${postId}`, formData, {
+        console.log("🔄 Updating post with ID:", postId);
+        console.log("🔄 API URL:", `${API_BASE_URL}/post/${postId}`);
+        
+        res = await axios.patch(`${API_BASE_URL}/post/${postId}`, formData, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -117,6 +121,9 @@ const AdminPanel = () => {
         alert("✅ Post updated successfully!");
       } else {
         // 🆕 Create new post
+        console.log("🆕 Creating new post");
+        console.log("🔄 API URL:", `${API_BASE_URL}/post/create`);
+        
         res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
           headers: { 
             Authorization: `Bearer ${token}`,
@@ -126,7 +133,7 @@ const AdminPanel = () => {
         alert("✅ Post created successfully!");
       }
 
-      console.log("Post response:", res.data);
+      console.log("✅ Server response:", res.data);
 
       // Reset form
       resetForm();
@@ -135,8 +142,18 @@ const AdminPanel = () => {
       navigate("/admin-posts");
       
     } catch (err) {
-      console.error("❌ Error:", err);
-      alert(err.response?.data?.message || err.message);
+      console.error("❌ Error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        url: err.config?.url
+      });
+      
+      const errorMessage = err.response?.data?.message 
+        || err.message 
+        || "An error occurred";
+      
+      alert(`❌ Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
