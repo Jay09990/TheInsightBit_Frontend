@@ -9,8 +9,9 @@ import ContactUs from "../pages/ContactUs";
 import Category from "../pages/Category";
 import NotFound from "../components/util/NotFound";
 import Blog from "../pages/Blog";
-import AdminPanel from "../pages/AdminPanel"; // your admin panel page
+import AdminPanel from "../pages/AdminPanel";
 import AdminPosts from "../pages/AdminPosts";
+import OAuthSuccess from "../pages/OAuthSuccess"; // ✅ Add this import
 
 // Protected route wrapper for admin
 const AdminRoute = ({ children }) => {
@@ -40,8 +41,9 @@ const AppRoutes = () => {
       {/* Auth Routes */}
       <Route path="/login" element={<Login_page />} />
       <Route path="/register" element={<Register_page />} />
+      <Route path="/oauth-success" element={<OAuthSuccess />} /> {/* ✅ Add this route */}
 
-      {/* Admin Route */}
+      {/* Admin Routes */}
       <Route
         path="/admin-panel"
         element={

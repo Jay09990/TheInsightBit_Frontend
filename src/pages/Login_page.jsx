@@ -13,7 +13,6 @@ const Login_page = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fix double-slash issue here
   const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ||
     "https://theinsightbit-backend.onrender.com/api/v1";
@@ -22,80 +21,43 @@ const Login_page = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      toast.error("Please fill in both email and password");
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
-      return;
-    }
+    if (!email || !password) return toast.error("Please fill in both email and password");
+    if (!isValidEmail(email)) return toast.error("Please enter a valid email address");
+    if (password.length < 6) return toast.error("Password must be at least 6 characters long");
 
     setLoading(true);
-
     try {
-      const response = await axios.post(`${API_BASE_URL}/users/login`, {
-        email,
-        password,
-      });
-
-      // ✅ Extract from response correctly
+      const response = await axios.post(`${API_BASE_URL}/users/login`, { email, password });
       const { user, accessToken, refreshToken } = response.data.data;
-      // console.log(user);
-      
 
-      // ✅ Save everything properly
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
-      // ✅ Trigger event for Navbar update
       window.dispatchEvent(new Event("storage-update"));
-
       toast.success("✅ Login successful!");
 
-      // ✅ Redirect based on role
-      if (user.role === "admin") {
-        navigate("/admin-panel");
-      } else {
-        navigate("/");
-      }
+      navigate(user.role === "admin" ? "/admin-panel" : "/");
     } catch (error) {
-      // console.error("Login Error:", error);
-
       const backendMessage =
         error.response?.data?.message?.toLowerCase() ||
         error.response?.data?.data?.message?.toLowerCase() ||
         "";
 
-      if (
-        backendMessage.includes("not registered") ||
-        backendMessage.includes("does not exist")
-      ) {
+      if (backendMessage.includes("not registered") || backendMessage.includes("does not exist"))
         toast.error("🚫 You haven’t registered yet. Please create an account.");
-      } else if (
-        backendMessage.includes("invalid password") ||
-        backendMessage.includes("incorrect password")
-      ) {
+      else if (backendMessage.includes("invalid password") || backendMessage.includes("incorrect password"))
         toast.error("❌ Incorrect password. Please try again.");
-      } else if (backendMessage.includes("user not found")) {
-        toast.error("⚠️ User not found. Please register first.");
-      } else {
-        toast.error(
-          error.response?.data?.message ||
-            "Something went wrong. Please try again."
-        );
-      }
+      else if (backendMessage.includes("user not found")) toast.error("⚠️ User not found. Please register first.");
+      else toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // ✅ Redirect user to backend Google OAuth route
+  const handleGoogleSignIn = () => {
+    window.location.href = `http://localhost:8000/api/v1/auth/google`;
   };
 
   return (
@@ -107,37 +69,30 @@ const Login_page = () => {
       <div className="max-w-md mx-auto bg-gray-200 rounded-3xl p-8 shadow-lg">
         <div className="flex justify-center mb-6">
           <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-              />
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">
-          Log In to your account
-        </h1>
-        <p className="text-center text-gray-700 mb-8">
-          or{" "}
-          <Link to="/register" className="text-purple-600 underline">
-            create a new account
-          </Link>
+        <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">Log In to your account</h1>
+        <p className="text-center text-gray-700 mb-4">
+          or <Link to="/register" className="text-purple-600 underline">create a new account</Link>
         </p>
+
+        {/* ✅ Google Sign-In Button */}
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="w-full mb-6 bg-white border border-gray-300 py-3 rounded-lg flex items-center justify-center hover:bg-gray-100 transition"
+        >
+          <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="w-5 h-5 mr-2" />
+          Sign in with Google
+        </button>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
-            <label className="block text-gray-900 font-medium mb-2">
-              Email address
-            </label>
+            <label className="block text-gray-900 font-medium mb-2">Email address</label>
             <input
               type="email"
               value={email}
@@ -148,9 +103,7 @@ const Login_page = () => {
           </div>
 
           <div className="mb-6">
-            <label className="block text-gray-900 font-medium mb-2">
-              Password
-            </label>
+            <label className="block text-gray-900 font-medium mb-2">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -164,11 +117,7 @@ const Login_page = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2"
               >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5 text-gray-600" />
-                ) : (
-                  <Eye className="w-5 h-5 text-gray-600" />
-                )}
+                {showPassword ? <EyeOff className="w-5 h-5 text-gray-600" /> : <Eye className="w-5 h-5 text-gray-600" />}
               </button>
             </div>
           </div>
