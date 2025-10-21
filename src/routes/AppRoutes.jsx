@@ -12,6 +12,7 @@ import Blog from "../pages/Blog";
 import AdminPanel from "../pages/AdminPanel";
 import AdminPosts from "../pages/AdminPosts";
 import OAuthSuccess from "../pages/OAuthSuccess"; // ✅ Add this import
+import ForgotPassword from "../pages/ForgotPassword";
 
 // Protected route wrapper for admin
 const AdminRoute = ({ children }) => {
@@ -42,6 +43,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login_page />} />
       <Route path="/register" element={<Register_page />} />
       <Route path="/oauth-success" element={<OAuthSuccess />} /> {/* ✅ Add this route */}
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Admin Routes */}
       <Route
