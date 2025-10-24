@@ -154,7 +154,7 @@ const Login_page = () => {
   };
 
   const handleGoogleSignIn = () => {
-    window.location.href = /*`https://theinsightbit-backend.onrender.com/api/v1/auth/google` ||*/ `http://localhost:8000/api/v1/auth/google`;
+    window.location.href = `https://theinsightbit-backend.onrender.com/api/v1/auth/google`;
     navigate("/auth/loading");
   };
 
