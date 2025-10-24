@@ -180,7 +180,16 @@ const Register_page = () => {
       setStep(2);
       startResendTimer();
     } catch (error) {
-      console.error("Send OTP Error:", error);
+      console.log(error)
+      // console.error("Send OTP Error:", error);
+      const message = error.response?.data?.message?.toLowerCase() || "";
+      // ⛔ Prevent infinite resend loop and lock user if email exists
+      if (message.includes(400) || message.includes("already registerd")) {
+        toast.error("📧 This email is already registered. Please log in instead.");
+        setStep(1);
+        setLoading(false);
+        return; // ✅ stop execution here
+      }
       handleOTPError(error);
     } finally {
       setLoading(false);
@@ -284,7 +293,6 @@ const Register_page = () => {
       setTimeout(() => {
         navigate("/");
       }, 500);
-
     } catch (error) {
       console.error("Registration Error:", error);
       handleRegistrationError(error);
@@ -479,85 +487,85 @@ const Register_page = () => {
                 />
                 <button
                   type="button"
-                  onClick={()=> setShowPassword(!showPassword)}
-className="absolute right-4 top-1/2 transform -translate-y-1/2"
-disabled={loading}
->
-{showPassword ? (
-<EyeOff className="w-5 h-5 text-gray-600" />
-) : (
-<Eye className="w-5 h-5 text-gray-600" />
-)}
-</button>
-</div>
-</div>
-        <div className="mb-4">
-          <label className="block text-gray-900 font-medium mb-2">
-            <Lock className="w-4 h-4 inline mr-2" />
-            Confirm Password
-          </label>
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full px-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder="Re-enter password"
-              disabled={loading}
-            />
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                  disabled={loading}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5 text-gray-600" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-gray-600" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-900 font-medium mb-2">
+                <Lock className="w-4 h-4 inline mr-2" />
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Re-enter password"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                  disabled={loading}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5 text-gray-600" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-gray-600" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-gray-900 font-medium mb-2">
+                <MapPin className="w-4 h-4 inline mr-2" />
+                Address <span className="text-gray-500 text-sm">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Your address"
+                disabled={loading}
+              />
+            </div>
+
             <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2"
+              type="submit"
               disabled={loading}
+              className="w-full bg-purple-600 text-white font-semibold py-4 rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {showConfirmPassword ? (
-                <EyeOff className="w-5 h-5 text-gray-600" />
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating Account...
+                </span>
               ) : (
-                <Eye className="w-5 h-5 text-gray-600" />
+                "Create Account"
               )}
             </button>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-gray-900 font-medium mb-2">
-            <MapPin className="w-4 h-4 inline mr-2" />
-            Address <span className="text-gray-500 text-sm">(Optional)</span>
-          </label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            placeholder="Your address"
-            disabled={loading}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-purple-600 text-white font-semibold py-4 rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <span className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Creating Account...
-            </span>
-          ) : (
-            "Create Account"
-          )}
-        </button>
-      </form>
-    )}
-  </div>
-</div>
-);
+          </form>
+        )}
+      </div>
+    </div>
+  );
 };
 export default Register_page;

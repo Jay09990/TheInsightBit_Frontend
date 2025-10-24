@@ -19,7 +19,7 @@ const Login_page = () => {
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
     const savedPassword = localStorage.getItem("rememberedPassword");
-    
+
     if (savedEmail && savedPassword) {
       setEmail(savedEmail);
       setPassword(savedPassword);
@@ -117,9 +117,9 @@ const Login_page = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/users/login`, { 
-        email: email.trim().toLowerCase(), 
-        password 
+      const response = await axios.post(`${API_BASE_URL}/users/login`, {
+        email: email.trim().toLowerCase(),
+        password
       });
 
       const { user, accessToken, refreshToken } = response.data.data;
@@ -154,7 +154,8 @@ const Login_page = () => {
   };
 
   const handleGoogleSignIn = () => {
-    window.location.href = `${API_BASE_URL}/auth/google`;
+    window.location.href = /*`https://theinsightbit-backend.onrender.com/api/v1/auth/google` ||*/ `http://localhost:8000/api/v1/auth/google`;
+    navigate("/auth/loading");
   };
 
   return (
