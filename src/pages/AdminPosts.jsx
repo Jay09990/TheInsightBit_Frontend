@@ -22,10 +22,17 @@ const AdminPosts = () => {
                     withCredentials: true,
                 });
                 const user = JSON.parse(localStorage.getItem("user"));
-                const adminPosts = data.data.filter(
-                    (post) => post.author?._id === user?._id
-                );
-                setPosts(adminPosts);
+                const allPosts = data.data || [];
+                if (user?.role === "admin") {
+                    // Admin sees all posts
+                    setPosts(allPosts);
+                } else {
+                    // Non-admin sees only own posts
+                    const ownPosts = allPosts.filter(
+                        (post) => post.author?._id === user?._id
+                    );
+                    setPosts(ownPosts);
+                }
             } catch (error) {
                 console.error("Error fetching posts:", error);
             }
