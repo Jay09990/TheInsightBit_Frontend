@@ -46,6 +46,8 @@ const Blog = ({ user }) => {
     title: p.headline,
     description: p.detail.slice(0, 80) + "...",
     image: p.mediaUrl,
+    detail: p.detail,
+    tags: p.tags || [],
   }));
 
   return (

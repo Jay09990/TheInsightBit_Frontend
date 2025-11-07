@@ -65,10 +65,24 @@ const BlogSlider = ({ slides }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white flex flex-col gap-3">
+                  {!!(slide.tags && slide.tags.length) && (
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar pr-4">
+                      {slide.tags.slice(0, 5).map((tag, index) => (
+                        <span
+                          key={`${tag}-${index}`}
+                          className="shrink-0 bg-white/15 text-white/90 border border-white/20 px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <h3 className="text-2xl md:text-3xl font-bold group-hover:text-blue-400 transition-colors line-clamp-2">
                     {slide.headline || slide.title}
                   </h3>
+
                   {slide.detail ? (
                     <div
                       className="text-gray-200 text-base md:text-lg leading-relaxed max-h-24 overflow-hidden [mask-image:linear-gradient(180deg,rgba(0,0,0,1)_70%,rgba(0,0,0,0)_100%)]"
