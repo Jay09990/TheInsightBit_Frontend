@@ -66,16 +66,19 @@ const BlogSlider = ({ slides }) => {
                 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-2xl md:text-3xl font-bold mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
                     {slide.headline || slide.title}
                   </h3>
-                  <p className="text-gray-200 text-lg">
-                    {slide.detail 
-                      ? (slide.detail.length > 100 
-                          ? `${slide.detail.substring(0, 100)}...` 
-                          : slide.detail)
-                      : slide.description}
-                  </p>
+                  {slide.detail ? (
+                    <div
+                      className="text-gray-200 text-base md:text-lg leading-relaxed max-h-24 overflow-hidden [mask-image:linear-gradient(180deg,rgba(0,0,0,1)_70%,rgba(0,0,0,0)_100%)]"
+                      dangerouslySetInnerHTML={{ __html: slide.detail }}
+                    />
+                  ) : (
+                    <p className="text-gray-200 text-base md:text-lg">
+                      {slide.description}
+                    </p>
+                  )}
                 </div>
               </Link>
             </div>

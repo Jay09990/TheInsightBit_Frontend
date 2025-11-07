@@ -83,14 +83,9 @@ const Blog = ({ user }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
-        className="max-w-4xl text-gray-200 leading-relaxed text-lg"
-      >
-        {post.detail?.split("\n").map((paragraph, index) => (
-          <p key={index} className="mb-6">
-            {paragraph.trim()}
-          </p>
-        ))}
-      </motion.div>
+        className="max-w-4xl w-full text-gray-200 leading-relaxed text-lg"
+        dangerouslySetInnerHTML={{ __html: post.detail || "" }}
+      />
 
       <BlogSlider slides={relatedSlides} />
 

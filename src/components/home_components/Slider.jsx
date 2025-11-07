@@ -103,23 +103,41 @@ const Slider = () => {
               <div
                 className={`max-w-2xl transition-all duration-500 ${
                   fade ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
+                } flex flex-col gap-3 sm:gap-4`}
               >
-                <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
+                {/* Tags Row (overflow-safe) */}
+                {!!(current.tags && current.tags.length) && (
+                  <div className="flex gap-2 overflow-x-auto no-scrollbar pr-4">
+                    {current.tags.slice(0, 5).map((t, i) => (
+                      <span
+                        key={`${t}-${i}`}
+                        className="shrink-0 bg-white/15 text-white/90 border border-white/20 px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm"
+                        title={t}
+                      >
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight line-clamp-2">
                   {current.headline}
                 </h3>
-                <p className="text-gray-200 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 leading-relaxed">
-                  {current.detail.length > 150
-                    ? `${current.detail.substring(0, 150)}...`
-                    : current.detail}
-                </p>
-                {/* ✅ Changed button to Link */}
-                <Link
-                  to={`/blog/${current._id}`}
-                  className="inline-block bg-white text-gray-900 px-6 py-2.5 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base shadow-lg"
-                >
-                  Read More →
-                </Link>
+
+                <div
+                  className="text-gray-200 text-sm sm:text-base md:text-lg leading-relaxed max-h-28 sm:max-h-32 overflow-hidden [mask-image:linear-gradient(180deg,rgba(0,0,0,1)_70%,rgba(0,0,0,0)_100%)]"
+                  dangerouslySetInnerHTML={{ __html: current.detail || "" }}
+                />
+
+                {/* Keep button visible: pin at end of column */}
+                <div className="mt-2 sm:mt-3">
+                  <Link
+                    to={`/blog/${current._id}`}
+                    className="inline-block bg-white text-gray-900 px-6 py-2.5 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base shadow-lg"
+                  >
+                    Read More →
+                  </Link>
+                </div>
               </div>
             </div>
 

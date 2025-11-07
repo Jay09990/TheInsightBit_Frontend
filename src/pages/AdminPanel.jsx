@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
 import { X, Plus } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -241,18 +242,35 @@ const AdminPanel = () => {
             )}
           </div>
 
-          {/* Details */}
+          {/* Details (Rich Text) */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
               Details
             </label>
-            <textarea
+            <Editor
+              apiKey={import.meta.env.VITE_TINYMCE_API_KEY || "no-api-key"}
               value={detail}
-              onChange={(e) => setDetail(e.target.value)}
-              placeholder="Write details here..."
-              rows={5}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              required
+              onEditorChange={(content) => setDetail(content)}
+              init={{
+                height: 380,
+                menubar: false,
+                plugins: [
+                  "lists",
+                  "link",
+                  "autolink",
+                  "code",
+                  "advlist",
+                ],
+                toolbar:
+                  "undo redo | blocks | bold italic underline | fontfamily fontsize | alignleft aligncenter alignright | bullist numlist | removeformat",
+                font_family_formats:
+                  "Default=inherit; Arial=Arial, Helvetica, sans-serif; Georgia=Georgia, serif; Times New Roman='Times New Roman', Times, serif; Courier New='Courier New', Courier, monospace;",
+                fontsize_formats: "12px 14px 16px 18px 24px 32px 48px",
+                block_unsupported_drop: false,
+                branding: false,
+                content_style:
+                  "body { font-family: inherit; }",
+              }}
             />
           </div>
 
