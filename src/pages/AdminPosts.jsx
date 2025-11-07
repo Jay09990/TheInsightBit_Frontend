@@ -11,8 +11,10 @@ const AdminPosts = () => {
     const [deleteTarget, setDeleteTarget] = useState(null);
 
     const navigate = useNavigate();
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://theinsightbit-backend.onrender.com/api/v1";
-
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
+    const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;
+    
+    
     useEffect(() => {
         const fetchPosts = async () => {
             try {

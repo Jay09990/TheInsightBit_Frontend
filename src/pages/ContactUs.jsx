@@ -14,10 +14,10 @@ const ContactUs = () => {
 
     emailjs
       .sendForm(
-        "service_m6jnaba", // 🔹 replace with your EmailJS service ID
-        "template_kdpetcl", // 🔹 replace with your template ID
+        import.meta.env.VITE_EMAILJS_SERVICE_ID, // 🔹 replace with your EmailJS service ID
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID, // 🔹 replace with your template ID
         formRef.current,
-        "RvTxF0rDlUR3aYamZ" // 🔹 replace with your public key
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY // 🔹 replace with your public key
       )
       .then(
         () => {

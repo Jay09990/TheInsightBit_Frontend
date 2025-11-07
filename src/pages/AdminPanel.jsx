@@ -30,8 +30,9 @@ const AdminPanel = () => {
   const location = useLocation();
 
   // Use environment variable or fallback to production URL
-    const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
-
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
+  const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;
+  
   // ✅ FIXED: Load post data when editing
   useEffect(() => {
     if (location.state?.postData) {

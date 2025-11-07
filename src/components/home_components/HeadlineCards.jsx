@@ -14,17 +14,14 @@ const HeadlineCardsList = () => {
   const [visibleCount, setVisibleCount] = useState(15); // Initially show 15 posts
 
   useEffect(() => {
-    const localLink = "http://localhost:8000/api/v1/post/headlines";
-    const globalLink =
-      "https://theinsightbit-backend.onrender.com/api/v1/post/headlines";
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
+    const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;
 
     const fetchHeadlines = async () => {
       try {
-        const response = await axios.get(globalLink);
-        const fetchedPosts = response.data.data || [];
-
-        setBlogData(fetchedPosts);
-        setVisibleBlogs(fetchedPosts.slice(0, 15));
+        const response = await axios.get(`${API_BASE_URL}/post/headlines?limit=15`);
+        setBlogData(response.data.data || []);
+        setVisibleBlogs(response.data.data.slice(0, 15));
       } catch (err) {
         // console.error(err);
         setError("Failed to fetch headlines");

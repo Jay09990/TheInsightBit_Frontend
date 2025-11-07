@@ -13,7 +13,9 @@ const Login_page = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_BASE_URL = "https://theinsightbit-backend.onrender.com/api/v1";
+  // NOTE: This value is also stored in .env as VITE_API_BASE_URL; it's safe to remove this hard-coded value and use import.meta.env.VITE_API_BASE_URL
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
+  const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;  
 
   // Load saved credentials on component mount
   useEffect(() => {
@@ -154,7 +156,8 @@ const Login_page = () => {
   };
 
   const handleGoogleSignIn = () => {
-    window.location.href = `https://theinsightbit-backend.onrender.com/api/v1/auth/google`;
+    // NOTE: This value is also stored in .env as VITE_GOOGLE_AUTH_URL; it's safe to remove this hard-coded value and use import.meta.env.VITE_GOOGLE_AUTH_URL
+    window.location.href = `${import.meta.env.VITE_GOOGLE_AUTH_URL}`;
     navigate("/auth/loading");
   };
 

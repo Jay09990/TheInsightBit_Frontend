@@ -7,7 +7,8 @@ const Comments = ({ postId, user }) => {
   const [replyText, setReplyText] = useState("");
   const [replyTarget, setReplyTarget] = useState(null);
 
-  const API_BASE_URL = "https://theinsightbit-backend.onrender.com"; // 🔹 change when deploying
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
+  const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL; // 🔹 change when deploying
 
   // ✅ Fetch all comments for this post
   useEffect(() => {
@@ -37,7 +38,7 @@ const Comments = ({ postId, user }) => {
       }
 
       await axios.post(
-        `${API_BASE_URL}/api/v1/comments/add`,
+        `${API_BASE_URL}/comments/add`,
         { postId, content: newComment },
         {
           headers: {
@@ -50,7 +51,7 @@ const Comments = ({ postId, user }) => {
       setNewComment("");
 
       // Refresh comments
-      const { data } = await axios.get(`${API_BASE_URL}/api/v1/comments/${postId}`);
+      const { data } = await axios.get(`${API_BASE_URL}/comments/${postId}`);
       setComments(Array.isArray(data?.data) ? data.data : []);
     } catch (err) {
       // console.error("❌ Failed to post comment:", err);
@@ -69,7 +70,7 @@ const Comments = ({ postId, user }) => {
       }
 
       await axios.post(
-        `${API_BASE_URL}/api/v1/comments/reply`,
+        `${API_BASE_URL}/comments/reply`,
         { commentId, reply: replyText },
         {
           headers: {
@@ -83,7 +84,7 @@ const Comments = ({ postId, user }) => {
       setReplyText("");
 
       // Refresh comments
-      const { data } = await axios.get(`${API_BASE_URL}/api/v1/comments/${postId}`);
+      const { data } = await axios.get(`${API_BASE_URL}/comments/${postId}`);
       setComments(Array.isArray(data?.data) ? data.data : []);
     } catch (err) {
       // console.error("❌ Failed to post reply:", err);
