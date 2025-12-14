@@ -1,49 +1,32 @@
 // ✅ HeadlineCardsList.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import dayjs from "dayjs";
 
-const HeadlineCardsList = () => {
-  const [blogData, setBlogData] = useState([]);
+const HeadlineCardsList = ({ headlines }) => {
   const [visibleBlogs, setVisibleBlogs] = useState([]); // For pagination
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [activeCategory, setActiveCategory] = useState("All");
   const [visibleCount, setVisibleCount] = useState(15); // Initially show 15 posts
 
   useEffect(() => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
-    const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;
-
-    const fetchHeadlines = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/post/headlines?limit=15`);
-        setBlogData(response.data.data || []);
-        setVisibleBlogs(response.data.data.slice(0, 15));
-      } catch (err) {
-        // console.error(err);
-        setError("Failed to fetch headlines");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHeadlines();
-  }, []);
+    setVisibleBlogs(headlines.slice(0, 15));
+  }, [headlines]);
 
   // ✅ Predefined + dynamic categories
   const predefinedCategories = [
-    "Technology",
+    "Current updates",
+    "India",
+    "World",
     "Politics",
     "Sports",
-    "Business",
-    "World",
-    "Science",
+    "Bussiness",
+    "Finance",
+    "Science"
   ];
   const dynamicCategories = [
-    ...new Set(blogData.flatMap((b) => b.categories || [])),
+    ...new Set(headlines.flatMap((b) => b.categories || [])),
   ].filter((cat) => cat && !predefinedCategories.includes(cat));
 
   const categories = ["All", ...predefinedCategories, ...dynamicCategories];
@@ -51,14 +34,14 @@ const HeadlineCardsList = () => {
   // ✅ Filter logic
   const filteredBlogs =
     activeCategory === "All"
-      ? blogData
-      : blogData.filter((b) => (b.categories || []).includes(activeCategory));
+      ? headlines
+      : headlines.filter((b) => (b.categories || []).includes(activeCategory));
 
   // ✅ Update visible blogs based on filter
   useEffect(() => {
     setVisibleCount(15);
     setVisibleBlogs(filteredBlogs.slice(0, 15));
-  }, [activeCategory, blogData]);
+  }, [activeCategory, headlines]);
 
   // ✅ Handle Load More
   const handleLoadMore = () => {
@@ -67,7 +50,6 @@ const HeadlineCardsList = () => {
     setVisibleBlogs(filteredBlogs.slice(0, newCount));
   };
 
-  if (loading) return <p className="text-center mt-8">Loading headlines...</p>;
   if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
 
   return (

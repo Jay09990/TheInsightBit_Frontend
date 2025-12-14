@@ -1,14 +1,48 @@
-import React from 'react'
-import Slider from '../components/home_components/Slider'
-import HeadlineCardsList from '../components/home_components/HeadlineCards'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Slider from '../components/home_components/Slider';
+import HeadlineCardsList from '../components/home_components/HeadlineCards';
+import Spinner from '../components/util/Spinner';
 
 const Home_page = () => {
+  const [sliderData, setSliderData] = useState([]);
+  const [headlineData, setHeadlineData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER || import.meta.env.VITE_API_BASE_URL_LOCAL;
+        const [sliderRes, headlinesRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/post/slider?limit=5`),
+          axios.get(`${API_BASE_URL}/post/headlines?limit=15`)
+        ]);
+        setSliderData(sliderRes.data.data || []);
+        setHeadlineData(headlinesRes.data.data || []);
+      } catch (error) {
+        console.error("Error fetching data for home page:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div>
-      <Slider />
-      <HeadlineCardsList/>
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          <Slider slides={sliderData} />
+          <HeadlineCardsList headlines={headlineData} />
+        </>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Home_page
+export default Home_page;

@@ -5,12 +5,14 @@ import { X, Plus } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const predefinedCategories = [
+  "Current updates",
+  "India",
+  "World",
   "Politics",
-  "Science & Tech",
-  "Entertainment",
   "Sports",
-  "Health",
-  "Lifestyle",
+  "Bussiness",
+  "Finance",
+  "Science"
 ];
 
 const AdminPanel = () => {
@@ -33,22 +35,22 @@ const AdminPanel = () => {
   // Use environment variable or fallback to production URL
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
   const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;
-  
+
   // ✅ FIXED: Load post data when editing
   useEffect(() => {
     if (location.state?.postData) {
       const post = location.state.postData;
-      
+
       setIsEditing(true);
       setPostId(post._id);
       setHeadline(post.headline || "");
       setDetail(post.detail || "");
       setTags(post.tags || []);
       setCategories(post.categories || []);
-      
+
       // Use mediaUrl if available, otherwise media
       setExistingMedia(post.mediaUrl || post.media || "");
-      
+
       // console.log("✅ Loaded post for editing:", post);
     }
   }, [location.state]);
@@ -100,7 +102,7 @@ const AdminPanel = () => {
     formData.append("detail", detail);
     tags.forEach((t) => formData.append("tags[]", t));
     categories.forEach((c) => formData.append("categories[]", c));
-    
+
     // Only append media if a new file is selected
     if (media) {
       formData.append("media", media);
@@ -108,14 +110,14 @@ const AdminPanel = () => {
 
     try {
       let res;
-      
+
       if (isEditing && postId) {
         // 📝 Update existing post
         // console.log("🔄 Updating post with ID:", postId);
         // console.log("🔄 API URL:", `${API_BASE_URL}/post/${postId}`);
-        
+
         res = await axios.patch(`${API_BASE_URL}/post/${postId}`, formData, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           },
@@ -125,9 +127,9 @@ const AdminPanel = () => {
         // 🆕 Create new post
         // console.log("🆕 Creating new post");
         // console.log("🔄 API URL:", `${API_BASE_URL}/post/create`);
-        
+
         res = await axios.post(`${API_BASE_URL}/post/create`, formData, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           },
@@ -139,10 +141,10 @@ const AdminPanel = () => {
 
       // Reset form
       resetForm();
-      
+
       // Navigate back to posts page
       navigate("/admin-posts");
-      
+
     } catch (err) {
       // console.error("❌ Error details:", {
       //   message: err.message,
@@ -150,11 +152,11 @@ const AdminPanel = () => {
       //   status: err.response?.status,
       //   url: err.config?.url
       // });
-      
-      const errorMessage = err.response?.data?.message 
-        || err.message 
+
+      const errorMessage = err.response?.data?.message
+        || err.message
         || "An error occurred";
-      
+
       alert(`❌ Error: ${errorMessage}`);
     } finally {
       setLoading(false);
@@ -214,9 +216,9 @@ const AdminPanel = () => {
               <div className="mb-2 p-3 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">Current Media:</p>
                 {existingMedia.endsWith('.mp4') || existingMedia.endsWith('.webm') ? (
-                  <video 
-                    src={existingMedia} 
-                    controls 
+                  <video
+                    src={existingMedia}
+                    controls
                     className="rounded-lg max-h-48 w-full object-cover"
                   />
                 ) : (
@@ -391,8 +393,8 @@ const AdminPanel = () => {
               {loading
                 ? "Saving..."
                 : isEditing
-                ? "✓ Confirm Edit"
-                : "➕ Create Post"}
+                  ? "✓ Confirm Edit"
+                  : "➕ Create Post"}
             </button>
 
             {isEditing && (

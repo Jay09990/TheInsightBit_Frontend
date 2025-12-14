@@ -1,30 +1,9 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 
-const Slider = () => {
-  const [slides, setSlides] = useState([]);
+const Slider = ({ slides }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fade, setFade] = useState(true);
-  const [loading, setLoading] = useState(true);
-
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
-  const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;
- 
-  // ✅ Fetch latest posts (limit 5)
-  useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/post/slider?limit=5`);
-        setSlides(res.data.data || []);
-      } catch (error) {
-        // console.error("Error fetching slider posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSlides();
-  }, []);
 
   // ✅ Auto-slide every 5 seconds
   useEffect(() => {
@@ -49,14 +28,7 @@ const Slider = () => {
     }, 300);
   };
 
-  if (loading)
-    return (
-      <div className="text-center py-12 text-gray-600 text-lg">
-        Loading slides...
-      </div>
-    );
-
-  if (slides.length === 0)
+  if (!slides || slides.length === 0)
     return (
       <div className="text-center py-12 text-gray-600 text-lg">
         No posts available for slider.
