@@ -120,12 +120,12 @@ const Slider = () => {
                   </div>
                 )}
 
-                <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight line-clamp-2">
+                <h3 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-white leading-tight line-clamp-2">
                   {current.headline}
                 </h3>
 
                 <div
-                  className="text-gray-200 text-sm sm:text-base md:text-lg leading-relaxed max-h-28 sm:max-h-32 overflow-hidden [mask-image:linear-gradient(180deg,rgba(0,0,0,1)_70%,rgba(0,0,0,0)_100%)]"
+                  className="text-gray-200 text-base leading-relaxed line-clamp-3"
                   dangerouslySetInnerHTML={{ __html: current.detail || "" }}
                 />
 

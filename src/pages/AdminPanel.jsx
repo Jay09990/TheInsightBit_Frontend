@@ -5,7 +5,7 @@ import { X, Plus } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const predefinedCategories = [
-  "Political",
+  "Politics",
   "Science & Tech",
   "Entertainment",
   "Sports",
