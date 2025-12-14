@@ -1,12 +1,51 @@
-# React + Vite
+# The Insighbit - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This document provides details for the frontend of The Insighbit blogging platform.
 
-Currently, two official plugins are available:
+## Purpose
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The frontend is a single-page application (SPA) built with React that provides a modern, responsive, and interactive user interface for readers and authors. It communicates with the backend API to fetch and display data, and to handle user interactions.
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Rich Text Editor**:
+  - Integrates the TinyMCE rich text editor for a powerful and intuitive post creation and editing experience.
+
+- **Routing**:
+  - Client-side routing is handled by React Router, providing seamless navigation between pages without full-page reloads.
+
+- **User Experience**:
+  - Toast notifications are used to provide non-intrusive feedback for user actions.
+  - A clean, modern UI designed for readability and ease of use.
+
+- **Technology Stack**:
+  - **Framework**: React (with Vite)
+  - **Styling**: Tailwind CSS
+  - **Routing**: React Router
+  - **API Communication**: Axios
+  - **Rich Text Editing**: TinyMCE
+
+## How to Use
+
+### Prerequisites
+
+- Node.js (v18 or later recommended)
+- The backend server must be running.
+
+### Frontend Setup
+
+1.  From the project's `frontend` directory, install the dependencies:
+    ```bash
+    npm install
+    ```
+2.  Create a `.env` file in the `frontend` directory and add the following variable to point to your running backend API:
+    ```env
+    VITE_API_URL=http://localhost:8000
+    ```
+3.  Start the development server:
+    ```bash
+    npm run dev
+    ```
+    The frontend will be accessible in your browser at `http://localhost:5173`.
+
+## Pending Tasks
