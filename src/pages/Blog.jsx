@@ -4,6 +4,7 @@ import BlogSlider from "../components/BlogPage/BlogSlider";
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
 import Comments from "../components/util/Comments.jsx";
+import PageLoader from "../components/util/PageLoader.jsx";
 
 const Blog = ({ user }) => {
   const { id } = useParams(); // 👈 get post ID from URL
@@ -16,6 +17,7 @@ const Blog = ({ user }) => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_RENDER;
     const API_BASE_URL_LOCAL = import.meta.env.VITE_API_BASE_URL_LOCAL;
     const fetchPost = async () => {
+      setLoading(true);
       try {
         // Fetch the specific post
         const postRes = await axios.get(`${API_BASE_URL}/post/${id}`);
@@ -24,10 +26,10 @@ const Blog = ({ user }) => {
 
         setPost(postRes.data.data);
         setRelatedPosts(allRes.data.data.filter((p) => p._id !== id));
-        setLoading(false);
       } catch (err) {
         // console.error(err);
         setError("Failed to fetch post");
+      } finally {
         setLoading(false);
       }
     };
@@ -35,8 +37,7 @@ const Blog = ({ user }) => {
     fetchPost();
   }, [id]);
 
-  if (loading)
-    return <p className="text-center text-white mt-20">Loading post...</p>;
+  if (loading) return <PageLoader />;
   if (error) return <p className="text-center text-red-500 mt-20">{error}</p>;
   if (!post)
     return <p className="text-center text-gray-400 mt-20">Post not found</p>;
@@ -56,7 +57,7 @@ const Blog = ({ user }) => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-4xl w-full text-center mb-10"
+        className="max-w-4xl w-full text-left mb-10"
       >
         <h1 className="text-4xl md:text-5xl font-bold text-blue-400 mb-4">
           {post.headline}
