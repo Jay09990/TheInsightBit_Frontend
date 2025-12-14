@@ -26,3 +26,12 @@ body {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 }
+	
+/* Ensure inline underlines and font-sizes from editor are visible */
+.post-content u {
+	text-decoration-line: underline;
+	text-decoration-thickness: 1.5px;
+	text-decoration-color: currentColor;
+}
+
+/* end post-content rules */

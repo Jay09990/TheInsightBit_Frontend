@@ -85,13 +85,12 @@ const Blog = ({ user }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
-        className="max-w-4xl w-full text-gray-200 leading-relaxed text-lg"
+        className="max-w-4xl w-full text-gray-200 leading-relaxed post-content"
         dangerouslySetInnerHTML={{ __html: post.detail || "" }}
       />
 
       <BlogSlider slides={relatedSlides} />
 
-      {/* 🗨️ Comments Section */}
       <Comments postId={post._id} user={user} />
     </div>
   );
