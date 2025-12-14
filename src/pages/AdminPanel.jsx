@@ -10,7 +10,7 @@ const predefinedCategories = [
   "World",
   "Politics",
   "Sports",
-  "Bussiness",
+  "Business",
   "Finance",
   "Science"
 ];

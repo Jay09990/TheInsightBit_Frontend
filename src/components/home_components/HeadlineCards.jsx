@@ -1,9 +1,10 @@
 // ✅ HeadlineCardsList.jsx
 import React, { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 
-const HeadlineCardsList = ({ headlines }) => {
+const HeadlineCardsList = ({ headlines = [] }) => {
   const [visibleBlogs, setVisibleBlogs] = useState([]); // For pagination
   const [error, setError] = useState(null);
 
@@ -21,7 +22,7 @@ const HeadlineCardsList = ({ headlines }) => {
     "World",
     "Politics",
     "Sports",
-    "Bussiness",
+    "Business",
     "Finance",
     "Science"
   ];
@@ -134,3 +135,20 @@ const HeadlineCardsList = ({ headlines }) => {
 };
 
 export default HeadlineCardsList;
+
+// PropTypes for runtime validation and developer warnings
+HeadlineCardsList.propTypes = {
+  headlines: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      headline: PropTypes.string.isRequired,
+      mediaUrl: PropTypes.string,
+      createdAt: PropTypes.string,
+      categories: PropTypes.arrayOf(PropTypes.string),
+    })
+  ),
+};
+
+HeadlineCardsList.defaultProps = {
+  headlines: [],
+};
