@@ -79,7 +79,7 @@ const Slider = ({ slides }) => {
               >
                 {/* Tags Row (overflow-safe) */}
                 {!!(current.tags && current.tags.length) && (
-                  <div className="flex gap-2 overflow-x-auto no-scrollbar pr-4">
+                  <div className="hidden sm:flex gap-2 overflow-x-auto no-scrollbar pr-4">
                     {current.tags.slice(0, 5).map((t, i) => (
                       <span
                         key={`${t}-${i}`}
@@ -97,7 +97,7 @@ const Slider = ({ slides }) => {
                 </h3>
 
                 <div
-                  className="text-gray-200 text-base leading-relaxed line-clamp-3"
+                  className="hidden sm:block text-gray-200 text-base leading-relaxed line-clamp-3"
                   dangerouslySetInnerHTML={{ __html: current.detail || "" }}
                 />
 
