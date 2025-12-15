@@ -264,9 +264,7 @@ const AdminPanel = () => {
                   "advlist",
                 ],
                 toolbar:
-                  "undo redo | blocks | bold italic underline | fontfamily fontsize | alignleft aligncenter alignright | bullist numlist | removeformat",
-                font_family_formats:
-                  "Default=inherit; Arial=Arial, Helvetica, sans-serif; Georgia=Georgia, serif; Times New Roman='Times New Roman', Times, serif; Courier New='Courier New', Courier, monospace;",
+                  "undo redo | bold italic underline | fontsize | alignleft aligncenter alignright | bullist numlist | removeformat",
                 fontsize_formats: "12px 14px 16px 18px 24px 32px 48px",
                 block_unsupported_drop: false,
                 branding: false,
