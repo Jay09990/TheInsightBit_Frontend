@@ -24,7 +24,9 @@ const HeadlineCardsList = ({ headlines = [] }) => {
     "Sports",
     "Business",
     "Finance",
-    "Science"
+    "Science",
+    "Health",
+    "Lifestyle"
   ];
   const dynamicCategories = [
     ...new Set(headlines.flatMap((b) => b.categories || [])),

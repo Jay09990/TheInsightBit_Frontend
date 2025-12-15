@@ -12,7 +12,9 @@ const predefinedCategories = [
   "Sports",
   "Business",
   "Finance",
-  "Science"
+  "Science",
+  "Health",
+  "Lifestyle"
 ];
 
 const AdminPanel = () => {
