@@ -5,9 +5,9 @@ const Slider = ({ slides }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fade, setFade] = useState(true);
 
-  // ✅ Auto-slide every 5 seconds
+  // Auto-slide every 5 seconds
   useEffect(() => {
-    if (slides.length === 0) return;
+    if (!slides || slides.length === 0) return;
 
     const interval = setInterval(() => {
       setFade(false);
@@ -18,7 +18,7 @@ const Slider = ({ slides }) => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [slides]);
 
   const goToSlide = (index) => {
     setFade(false);
@@ -28,12 +28,13 @@ const Slider = ({ slides }) => {
     }, 300);
   };
 
-  if (!slides || slides.length === 0)
+  if (!slides || slides.length === 0) {
     return (
       <div className="text-center py-12 text-gray-600 text-lg">
         No posts available for slider.
       </div>
     );
+  }
 
   const current = slides[currentSlide];
 
@@ -46,7 +47,8 @@ const Slider = ({ slides }) => {
 
         <div className="relative bg-gray-900 rounded-2xl overflow-hidden shadow-xl">
           <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px]">
-            {/* ✅ Image or Video */}
+
+            {/* ================= MEDIA ================= */}
             <div
               className={`absolute inset-0 transition-opacity duration-500 ${
                 fade ? "opacity-100" : "opacity-0"
@@ -67,24 +69,26 @@ const Slider = ({ slides }) => {
                   className="w-full h-full object-cover"
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-transparent" />
             </div>
 
-            {/* ✅ Content Overlay */}
+            {/* ================= CONTENT ================= */}
             <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 md:px-16 lg:px-20">
               <div
                 className={`max-w-2xl transition-all duration-500 ${
                   fade ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 } flex flex-col gap-3 sm:gap-4`}
               >
-                {/* Tags Row (overflow-safe) */}
+
+                {/* Hashtags — DESKTOP ONLY */}
                 {!!(current.tags && current.tags.length) && (
                   <div className="hidden sm:flex gap-2 overflow-x-auto no-scrollbar pr-4">
                     {current.tags.slice(0, 5).map((t, i) => (
                       <span
                         key={`${t}-${i}`}
                         className="shrink-0 bg-white/15 text-white/90 border border-white/20 px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm"
-                        title={t}
                       >
                         #{t}
                       </span>
@@ -92,29 +96,37 @@ const Slider = ({ slides }) => {
                   </div>
                 )}
 
-                <h3 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-white leading-tight line-clamp-2">
+                {/* Title — ALWAYS visible */}
+                <h3 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-white leading-tight line-clamp-2">
                   {current.headline}
                 </h3>
 
-                <div
-                  className="hidden sm:block text-gray-200 text-base leading-relaxed line-clamp-3"
-                  dangerouslySetInnerHTML={{ __html: current.detail || "" }}
-                />
+                {/* Details — DESKTOP ONLY, PARTIAL + FADE */}
+                <div className="relative hidden sm:block max-h-[96px] overflow-hidden">
+                  <div
+                    className="text-gray-200 text-base leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: current.detail || "" }}
+                  />
 
-                {/* Keep button visible: pin at end of column */}
+                  {/* Fade-out */}
+                  <div className="pointer-events-none absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-black/80 to-transparent" />
+                </div>
+
+                {/* Read More — ALWAYS visible */}
                 <div className="mt-2 sm:mt-3">
                   <Link
                     to={`/blog/${current._id}`}
-                    className="inline-block bg-white text-gray-900 px-6 py-2.5 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base shadow-lg"
+                    className="inline-block bg-white text-gray-900 px-5 sm:px-6 py-2 sm:py-2.5 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base shadow-lg"
                   >
                     Read More →
                   </Link>
                 </div>
+
               </div>
             </div>
 
-            {/* ✅ Navigation Dots */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-3 z-10">
+            {/* ================= DOTS ================= */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-10">
               {slides.map((_, index) => (
                 <button
                   key={index}
@@ -129,50 +141,29 @@ const Slider = ({ slides }) => {
               ))}
             </div>
 
-            {/* ✅ Arrow Buttons */}
+            {/* ================= ARROWS ================= */}
             <button
               onClick={() =>
                 goToSlide(
                   currentSlide === 0 ? slides.length - 1 : currentSlide - 1
                 )
               }
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full transition-all duration-300 z-10"
-              aria-label="Previous slide"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full transition z-10"
             >
-              <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
             <button
               onClick={() => goToSlide((currentSlide + 1) % slides.length)}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full transition-all duration-300 z-10"
-              aria-label="Next slide"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full transition z-10"
             >
-              <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
+
           </div>
         </div>
       </div>
